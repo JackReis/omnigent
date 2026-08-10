@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1080" viewBox="0 0 1600 1080">
+<rect width="1600" height="1080" fill="#111827"/>
+<g font-family="Inter, -apple-system, BlinkMacSystemFont, sans-serif" fill="#f9fafb">
+<text x="80" y="52" font-size="18" fill="#94a3b8" letter-spacing="3">AGENTIC OS · FLEET GOVERNANCE LANE MAP</text>
+<rect x="560" y="85" width="480" height="145" rx="18" fill="#241b3d" stroke="#8b5cf6" stroke-width="3"/>
+<text x="590" y="128" font-size="28" font-weight="700" fill="#c4b5fd">Operator and Omnigent</text><text x="590" y="170" font-size="18">Harness selection and session brokering.</text><text x="590" y="198" font-size="18">Governed work routes through Paperclip + Ringer.</text>
+<rect x="150" y="340" width="480" height="155" rx="18" fill="#102d2a" stroke="#34d399" stroke-width="3"/><text x="180" y="388" font-size="28" font-weight="700" fill="#6ee7b7">Paperclip</text><text x="180" y="430" font-size="18">Projects, work records, approvals,</text><text x="180" y="458" font-size="18">agents, and coordination.</text>
+<rect x="970" y="340" width="480" height="155" rx="18" fill="#351b2a" stroke="#fb7185" stroke-width="3"/><text x="1000" y="388" font-size="28" font-weight="700" fill="#fda4af">Ringer</text><text x="1000" y="430" font-size="18">Manifests, model control, typists,</text><text x="1000" y="458" font-size="18">judges, checks, and receipts.</text>
+<g fill="none" stroke="#a78bfa" stroke-width="4"><path d="M700 230 L390 340" marker-end="url(#a)"/><path d="M900 230 L1210 340" marker-end="url(#a)"/></g>
+<g fill="none" stroke="#4ade80" stroke-width="4"><path d="M630 418 L970 418" marker-end="url(#a)"/><path d="M970 418 L630 418" marker-end="url(#a)"/></g>
+<text x="660" y="405" font-size="16" fill="#4ade80">peer coordination</text>
+<text x="800" y="555" font-size="16" text-anchor="middle" fill="#94a3b8" letter-spacing="2">REGISTERED EXECUTION LANES · PAPERCLIP + RINGER · OMNIGENT DIRECT DENIED</text>
+<g fill="none" stroke-width="4"><path d="M390 495 L275 610" stroke="#34d399" marker-end="url(#a)"/><path d="M1210 495 L1315 610" stroke="#fb7185" marker-end="url(#a)"/><path d="M790 495 L790 610" stroke="#94a3b8" marker-end="url(#a)"/></g>
+<rect x="100" y="610" width="350" height="190" rx="18" fill="#34250c" stroke="#f59e0b" stroke-width="3"/><text x="130" y="660" font-size="28" font-weight="700" fill="#fbbf24">Devin</text><text x="130" y="705" font-size="18">Orchestration, environment setup,</text><text x="130" y="733" font-size="18">cross-service coordination</text><text x="130" y="774" font-size="15" fill="#fcd34d">Registered: Paperclip + Ringer</text>
+<rect x="520" y="610" width="350" height="190" rx="18" fill="#0c2d3d" stroke="#38bdf8" stroke-width="3"/><text x="550" y="660" font-size="28" font-weight="700" fill="#7dd3fc">Cursor</text><text x="550" y="705" font-size="18">Editor-first refactors, coding,</text><text x="550" y="733" font-size="18">tests, and lint fixes</text><text x="550" y="774" font-size="15" fill="#bae6fd">Registered: Paperclip + Ringer</text>
+<rect x="940" y="610" width="450" height="190" rx="18" fill="#1e2448" stroke="#818cf8" stroke-width="3"/><text x="970" y="660" font-size="22" font-weight="700" fill="#a5b4fc">Claude · Codex · Kimi · Pi · OpenCode · Hermes</text><text x="970" y="705" font-size="18">Capability-specific selection</text><text x="970" y="733" font-size="18">from the shared registry</text><text x="970" y="774" font-size="15" fill="#c7d2fe">Registered: Paperclip + Ringer</text>
+<path d="M800 800 L800 890" fill="none" stroke="#f59e0b" stroke-width="4" marker-end="url(#a)"/>
+<rect x="460" y="900" width="700" height="120" rx="18" fill="#30250f" stroke="#f59e0b" stroke-width="3"/><text x="500" y="945" font-size="26" font-weight="700" fill="#fbbf24">Canonical evidence and continuity</text><text x="500" y="985" font-size="17">Paperclip authority · Ringer receipts · Vault human-readable mirror</text>
+</g><defs><marker id="a" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8" fill="none" stroke="context-stroke" stroke-width="2"/></marker></defs></svg>

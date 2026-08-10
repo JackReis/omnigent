@@ -1,0 +1,107 @@
+name: fleet-dispatcher
+description: Omnigent front door for bounded dispatch into the existing Ringer and Paperclip fleet.
+
+executor:
+  harness: hermes
+
+defaults:
+  agent: hermes
+  provider_preference: ollama-cloud
+  model: kimi-k3
+  engine: kimi
+  required_when_unspecified: true
+  allow_per_task_override: true
+  optional_routes: [ringer, devin, cursor]
+  route_when_available: true
+  heavy_worker:
+    tags: [high-capability, heavy, complex, deepseek]
+    model: deepseek-v4-flash
+
+prompt: |
+  You are the user's Omnigent fleet dispatcher. Ringer remains the deterministic
+  execution and receipt spine, Paperclip remains the shared tracking surface,
+  Aegis remains authoritative for work state, and the Vault remains the durable
+  human-readable mirror.
+
+  Route normal workflow tasks back to Paperclip. Route explicit single-harness
+  tasks to Omnigent directly unless the requested lane is registered as a
+  governed sibling. Devin and Cursor are registered with both Paperclip and
+  Ringer and must route through Ringer with Paperclip authority. Route
+  meta-harness, multi-model, multi-agent, or poly tasks through Ringer with an
+  Omnigent profile. Profile selection is
+  deterministic: poly for coordination, planner for research/planning, coder
+  for implementation, and review for independent verification.
+  Unless a task explicitly names another route, use the OllamaCloud-powered
+  Hermes preference with Kimi K3 (`agent=hermes`, `model=kimi-k3`). When a task
+  is tagged or described as high-capability, heavy, complex, or DeepSeek work,
+  use the heavier same-provider model `deepseek-v4-flash` instead. Explicit
+  per-task agent, provider, model, or engine choices are preserved as overrides.
+  When available and policy-allowed, use Ringer for governed fan-out, Devin for
+  orchestration and cross-service coordination, and Cursor for editor-first
+  refactors, coding, tests, or linting. These are optional routes, not new
+  mandatory backends, and availability must be verified before selection.
+  Keep secrets in environment variables and never include them in prompts,
+  manifests, receipts, or reports. Never alter Ringer or Paperclip defaults.
+  Return the Ringer run name, manifest path, receipt path, and any blocker.
+
+tools:
+  route_task:
+    type: function
+    description: Select Paperclip-native, Omnigent-direct, or Ringer-over-Omnigent execution and emit a unified receipt.
+    callable: omnigent.fleet_dispatch.route_task
+    parameters:
+      type: object
+      properties:
+        prompt: {type: string}
+        tags: {type: array, items: {type: string}}
+        capabilities: {type: array, items: {type: string}}
+        policy_flags: {type: array, items: {type: string}}
+        agent_class: {type: string, default: general}
+        paperclip_issue: {type: string}
+        bead_id: {type: string}
+        workspace: {type: string}
+        lane_contract_version: {type: string}
+        adapter_version: {type: string}
+        policy_version: {type: string}
+        dry_run: {type: boolean, default: false}
+        model: {type: string, description: Optional per-task model override.}
+      required: [prompt]
+  ringer_dispatch:
+    type: function
+    description: Dispatch a bounded prompt through the existing Ringer fleet and return receipt metadata.
+    callable: omnigent.fleet_dispatch.dispatch_prompt
+    parameters:
+      type: object
+      properties:
+        prompt:
+          type: string
+        title:
+          type: string
+          default: omnigent-dispatch
+        engines:
+          type: string
+          default: kimi
+        fanout:
+          type: integer
+          minimum: 1
+          maximum: 4
+          default: 1
+        workspace:
+          type: string
+          description: Optional absolute workspace under the configured coordination root.
+        paperclip_issue:
+          type: string
+          description: Optional authoritative Paperclip issue identifier to stamp into every task.
+        bead_id:
+          type: string
+          description: Optional authoritative Beads identifier to stamp into every task.
+        dry_run:
+          type: boolean
+          default: false
+        model:
+          type: string
+          description: Optional per-task model override.
+      required: [prompt]
+
+async: true
+cancellable: true

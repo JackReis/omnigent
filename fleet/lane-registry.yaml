@@ -1,0 +1,164 @@
+version: 1
+description: Shared execution-lane registry for Paperclip authority and Ringer execution.
+governance:
+  authority: paperclip
+  execution_spine: ringer
+  lifecycle_owner: ringer
+  registered_lane_scope: execution_only
+  omnigent_direct_bypass: denied_for_registered_lanes
+  retry:
+    max_additional_attempts: 1
+    on_exhaustion: blocked
+  escalation: paperclip_issue_owner_or_board
+lanes:
+  hermes:
+    display_name: Hermes
+    lane_contract_version: 1.0.0
+    adapter_version: 1.0.0
+    policy_version: 1.0.0
+    registrations: [paperclip, ringer]
+    capabilities: [general, coordination, research]
+    capability_mapping:
+      contract_version: 1.0.0
+      capabilities: [general, coordination, research]
+    default_profile: planner
+    omnigent_direct_allowed: false
+    governance:
+      owner: ringer
+      allowed_scope: execute_assigned_task
+      return_control_to: ringer
+      return_control_on: [failure, ambiguity, out_of_scope]
+  claude:
+    display_name: Claude
+    lane_contract_version: 1.0.0
+    adapter_version: 1.0.0
+    policy_version: 1.0.0
+    registrations: [paperclip, ringer]
+    capabilities: [general, coding, research, review]
+    capability_mapping:
+      contract_version: 1.0.0
+      capabilities: [general, coding, research, review]
+    default_profile: planner
+    omnigent_direct_allowed: false
+    governance:
+      owner: ringer
+      allowed_scope: execute_assigned_task
+      return_control_to: ringer
+      return_control_on: [failure, ambiguity, out_of_scope]
+  codex:
+    display_name: Codex
+    lane_contract_version: 1.0.0
+    adapter_version: 1.0.0
+    policy_version: 1.0.0
+    registrations: [paperclip, ringer]
+    capabilities: [coding, testing, review]
+    capability_mapping:
+      contract_version: 1.0.0
+      capabilities: [coding, testing, review]
+    default_profile: coder
+    omnigent_direct_allowed: false
+    governance:
+      owner: ringer
+      allowed_scope: execute_assigned_task
+      return_control_to: ringer
+      return_control_on: [failure, ambiguity, out_of_scope]
+  kimi:
+    display_name: Kimi
+    lane_contract_version: 1.0.0
+    adapter_version: 1.0.0
+    policy_version: 1.0.0
+    registrations: [paperclip, ringer]
+    capabilities: [coding, research, review]
+    capability_mapping:
+      contract_version: 1.0.0
+      capabilities: [coding, research, review]
+    default_profile: coder
+    omnigent_direct_allowed: false
+    governance:
+      owner: ringer
+      allowed_scope: execute_assigned_task
+      return_control_to: ringer
+      return_control_on: [failure, ambiguity, out_of_scope]
+  pi:
+    display_name: Pi
+    lane_contract_version: 1.0.0
+    adapter_version: 1.0.0
+    policy_version: 1.0.0
+    registrations: [paperclip, ringer]
+    capabilities: [coding, terminal]
+    capability_mapping:
+      contract_version: 1.0.0
+      capabilities: [coding, terminal]
+    default_profile: coder
+    omnigent_direct_allowed: false
+    governance:
+      owner: ringer
+      allowed_scope: execute_assigned_task
+      return_control_to: ringer
+      return_control_on: [failure, ambiguity, out_of_scope]
+  opencode:
+    display_name: OpenCode
+    lane_contract_version: 1.0.0
+    adapter_version: 1.0.0
+    policy_version: 1.0.0
+    registrations: [paperclip, ringer]
+    capabilities: [coding, terminal, review]
+    capability_mapping:
+      contract_version: 1.0.0
+      capabilities: [coding, terminal, review]
+    default_profile: coder
+    omnigent_direct_allowed: false
+    governance:
+      owner: ringer
+      allowed_scope: execute_assigned_task
+      return_control_to: ringer
+      return_control_on: [failure, ambiguity, out_of_scope]
+  devin:
+    display_name: Devin
+    lane_contract_version: 1.0.0
+    adapter_version: 1.0.0
+    policy_version: 1.0.0
+    registrations: [paperclip, ringer]
+    capabilities: [orchestration, environment_setup, cross_service_coordination]
+    capability_mapping:
+      contract_version: 1.0.0
+      capabilities: [orchestration, environment_setup, cross_service_coordination]
+    default_profile: planner
+    omnigent_direct_allowed: false
+    governance:
+      owner: ringer
+      allowed_scope: execute_assigned_task
+      return_control_to: ringer
+      return_control_on: [failure, ambiguity, out_of_scope]
+    paths:
+      executable: devin
+      config: ~/.config/devin/config.json
+      state: ~/.config/devin
+    invocation:
+      # Devin's non-interactive read-only queue checks may inspect localhost
+      # Paperclip endpoints; dangerous is explicit here so generated manifests
+      # match the working Ringer adapter rather than relying on a hidden override.
+      args: [--print, --permission-mode, dangerous, --respect-workspace-trust, "false", --]
+  cursor:
+    display_name: Cursor
+    lane_contract_version: 1.0.0
+    adapter_version: 1.0.0
+    policy_version: 1.0.0
+    registrations: [paperclip, ringer]
+    capabilities: [editor, refactor, coding, testing, linting]
+    capability_mapping:
+      contract_version: 1.0.0
+      capabilities: [editor, refactor, coding, testing, linting]
+    default_profile: coder
+    omnigent_direct_allowed: false
+    governance:
+      owner: ringer
+      allowed_scope: execute_assigned_task
+      return_control_to: ringer
+      return_control_on: [failure, ambiguity, out_of_scope]
+    paths:
+      executable: cursor-agent
+      config: ~/.cursor
+      state: ~/.cursor/projects
+    invocation:
+      args: [--print, --output-format, json, --trust]
