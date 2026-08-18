@@ -1,0 +1,49 @@
+{
+  "schema": "fleet-service-update/v1",
+  "event_id": "cd9fe4b00e1c60d4838f",
+  "event": "policy_decision",
+  "durable_ref": "JAC-ROUTER-SMOKE",
+  "occurred_at": "2026-07-31T02:21:21.840833+00:00",
+  "route": {
+    "route": "paperclip-native",
+    "profile": null,
+    "reason": "normal workflow task"
+  },
+  "evidence": {
+    "manifest": null,
+    "receipt": null,
+    "artifacts": []
+  },
+  "deliveries": {
+    "holographic": {
+      "status": "queued",
+      "attempts": 0
+    },
+    "honcho": {
+      "status": "queued",
+      "attempts": 0
+    },
+    "hindsight": {
+      "status": "queued",
+      "attempts": 0
+    },
+    "openbrain1": {
+      "status": "queued",
+      "attempts": 0
+    },
+    "gbrain": {
+      "status": "queued",
+      "attempts": 0
+    },
+    "vaults": {
+      "status": "queued",
+      "attempts": 0
+    }
+  },
+  "retry": {
+    "policy": "exponential",
+    "base_seconds": 30,
+    "max_seconds": 3600,
+    "never_drop": true
+  }
+}

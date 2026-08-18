@@ -1,0 +1,47 @@
+{
+  "run_name": "omnigent-paperclip-poly-20260731T024432Z",
+  "workdir": "/Users/hermes/Vault/coordination/omnigent-dispatch/runtime/work/omnigent-paperclip-poly-20260731T024432Z",
+  "risk": "medium",
+  "orchestrator": {
+    "provider": "local",
+    "model": "omnigent",
+    "family": "meta-harness",
+    "runtime": "omnigent-ringer",
+    "profile": "poly",
+    "harness": "hermes",
+    "orchestrator": "poly",
+    "attestation": "Bounded local dispatch through the existing Ringer execution spine"
+  },
+  "max_parallel": 2,
+  "worktrees": false,
+  "tasks": [
+    {
+      "key": "dispatch-1-kimi",
+      "engine": "kimi",
+      "task_type": "omnigent-fleet-dispatch",
+      "spec": "Coordinator Fleet Coordination Check. Read metadata.executionLane from the live agent table. Select at most ten independent, plan-backed tasks per cycle, one run per selected agent. Enforce each verified lane maxParallel and pool limits: Ollama Cloud 3; Claude Code through OmniGent 2; local Aegis 2 only while host health is green; Codex 1; external fast lane 1 after a current no-write canary; independent Ringer review 1.\n\nYou are fleet worker 1 of 2. Produce an independent result and do not coordinate through untracked channels.\n\nWrite a concise completion report to report.md in the current task directory.",
+      "check": "python3 -c 'from pathlib import Path; p=Path(\"report.md\"); raise SystemExit(0 if p.is_file() and p.stat().st_size else 1)'",
+      "expect_files": [
+        "report.md"
+      ],
+      "timeout_s": 1800,
+      "full_access": false,
+      "verified": "Worker produced a non-empty tracked completion report.",
+      "paperclip_issue": "JAC-3996"
+    },
+    {
+      "key": "dispatch-2-mock",
+      "engine": "mock",
+      "task_type": "omnigent-fleet-dispatch",
+      "spec": "MOCK_FILE: report.md\n{\n  \"status\": \"PASS\",\n  \"source\": \"omnigent\",\n  \"route\": \"ringer\",\n  \"worker\": 2,\n  \"prompt\": \"Coordinator Fleet Coordination Check. Read metadata.executionLane from the live agent table. Select at most ten independent, plan-backed tasks per cycle, one run per selected agent. Enforce each verified lane maxParallel and pool limits: Ollama Cloud 3; Claude Code through OmniGent 2; local Aegis 2 only while host health is green; Codex 1; external fast lane 1 after a current no-write canary; independent Ringer review 1.\"\n}\nMOCK_END",
+      "check": "python3 -c 'from pathlib import Path; p=Path(\"report.md\"); raise SystemExit(0 if p.is_file() and p.stat().st_size else 1)'",
+      "expect_files": [
+        "report.md"
+      ],
+      "timeout_s": 1800,
+      "full_access": false,
+      "verified": "Worker produced a non-empty tracked completion report.",
+      "paperclip_issue": "JAC-3996"
+    }
+  ]
+}

@@ -1,0 +1,121 @@
+{
+  "artifact_path": "/Users/hermes/Vault/coordination/omnigent-dispatch/runtime/ringer-state/artifacts/omnigent-paperclip-jac4173-devin-workload-20260802T1845Z-20260802T184433Z-p29961.html",
+  "contract_review": null,
+  "contract_sha256": "300adfaf3ea6cf1ae231351723dc0bb2b95c3cfa569bf863e9562eac069b9104",
+  "dashboard_port": null,
+  "elapsed_s": 26.9,
+  "fail": 1,
+  "finished": true,
+  "identity": "omnigent",
+  "live_path": "/Users/hermes/Vault/coordination/omnigent-dispatch/runtime/ringer-state/artifacts/live/omnigent-paperclip-jac4173-devin-workload-20260802T1845Z.html",
+  "max_parallel": 1,
+  "orchestrator": {
+    "attestation": "Ringer-owned bounded workload for Paperclip JAC-4173 through the validated Devin lane",
+    "family": "registered-lane",
+    "harness": "devin",
+    "model": "devin",
+    "orchestrator": "single",
+    "profile": "review",
+    "provider": "local",
+    "runtime": "ringer"
+  },
+  "pass": 0,
+  "pid": 29961,
+  "port": null,
+  "report_path": "/Users/hermes/Vault/coordination/omnigent-dispatch/runtime/ringer-state/artifacts/omnigent-paperclip-jac4173-devin-workload-20260802T1845Z-20260802T184433Z-p29961-report.html",
+  "report_ready": true,
+  "risk": "low",
+  "run_id": "omnigent-paperclip-jac4173-devin-workload-20260802T1845Z-20260802T184433Z-p29961",
+  "run_name": "omnigent-paperclip-jac4173-devin-workload-20260802T1845Z",
+  "started_at": "2026-08-02T18:44:33.326870+00:00",
+  "state": "finished",
+  "summary": {
+    "fail": 1,
+    "pass": 0,
+    "tokens": 0
+  },
+  "tasks": [
+    {
+      "activity": "FAIL: report.md missing required evidence or headings: Result, Queue Snapshot...",
+      "attempts": 2,
+      "bead_id": "",
+      "check": "python3 -c 'from pathlib import Path; import re; p=Path(\"report.md\"); text=p.read_text() if p.is_file() else \"\"; required=[\"Result\", \"Queue Snapshot\", \"Active Runs\", \"Lane Eligibility\", \"Selected Work\", \"Governance\", \"Evidence\", \"Risks\", \"Next Adjustment\", \"JAC-4173\", \"2026-08-02T\"]; missing=[h for h in required if h not in text]; ok=p.is_file() and p.stat().st_size > 900 and not missing and re.search(r\"\\b(PASS|DEGRADED|BLOCKED)\\b\", text); raise SystemExit(0 if ok else (print(\"FAIL: report.md missing required evidence or headings: \" + \", \".join(missing)), 1)[1])'",
+      "check_output_tail": "[ringer] missing expected files: report.md FAIL: report.md missing required evidence or headings: Result, Queue Snapshot, Active Runs, Lane Eligibility, Selected Work, Governance, Evidence, Risks, Next Adjustment, JAC-4173, 2026-08-02T",
+      "check_returncode": 1,
+      "check_timed_out": false,
+      "children": 0,
+      "deliverable_notes": [],
+      "deliverables": [],
+      "elapsed_s": 26.9,
+      "engine": "devin",
+      "goal_id": "",
+      "key": "jac4173-devin-workload",
+      "log_path": "/Users/hermes/Vault/coordination/omnigent-dispatch/runtime/work/omnigent-paperclip-jac4173-devin-workload-20260802T1845Z/jac4173-devin-workload/worker.log",
+      "log_tail": [
+        "warning: rejected a tool call that requires confirmation. Running in non-interactive mode. Use --permission-mode dangerous to auto-approve all tools.",
+        "warning: rejected a tool call that requires confirmation. Running in non-interactive mode. Use --permission-mode dangerous to auto-approve all tools.",
+        "[ringer.py] attempt 2 exited rc=0"
+      ],
+      "log_tail_full": [
+        "",
+        "[ringer.py] attempt 1 started 2026-08-02T18:44:33.375967+00:00",
+        "[ringer.py] engine: devin",
+        "[ringer.py] launch receipt: lr-01KZ1WNGYZR2CZHND4QFXM1JF8",
+        "[ringer.py] command: /Users/hermes/.local/bin/devin --print --permission-mode accept-edits --respect-workspace-trust false -- 'Execute the assigned Paperclip queue workload JAC-4173, titled '\"'\"'Coordinator Fleet Coordination Check'\"'\"', as a bounded read-only verification. You are running under Ringer as the registered Devin execution lane; Paperclip remains the authority. First inspect /Users/hermes/Vault/coordination/omnigent-dispatch/fleet/lane-registry.yaml and record the Devin lane contract, allowed scope, return-control rules, executable, and invocation metadata. Then inspect the live local Paperclip API at http://localhost:3101 for the company 87c32b8e-f131-4df8-ad8e-963d01b458e7: read the agent table and the nonterminal issue counts needed to report queue, active runs, and blockers. If the API is unavailable, record the exact HTTP or connection failure and use only local evidence; do not invent live results. Produce only report.md in the current task directory. The report must include these headings exactly: Result, Queue Snapshot, Active Runs, Lane Eligibility, Selected Work, Governance, Evidence, Risks, Next Adjustment. State that JAC-4173 was selected because it is a small, independent, read-only coordination check and that this run is the execution of that queued item. Include an ISO-8601 UTC timestamp, concrete endpoint/path evidence, and a PASS/DEGRADED/BLOCKED result. Do not modify source files, lane registry, Paperclip issues, statuses, assignments, agents, credentials, services, or external systems; do not send messages; do not create or close work. Return control to Ringer on failure, ambiguity, or out-of-scope findings.' < /dev/null",
+        "warning: rejected a tool call that requires confirmation. Running in non-interactive mode. Use --permission-mode dangerous to auto-approve all tools.",
+        "warning: rejected a tool call that requires confirmation. Running in non-interactive mode. Use --permission-mode dangerous to auto-approve all tools.",
+        "[ringer.py] attempt 1 exited rc=0",
+        "",
+        "[ringer.py] attempt 2 started 2026-08-02T18:44:47.481416+00:00",
+        "[ringer.py] engine: devin",
+        "[ringer.py] launch receipt: lr-01KZ1WNYQSK8AZ80TG6ET561GN",
+        "[ringer.py] command: /Users/hermes/.local/bin/devin --print --permission-mode accept-edits --respect-workspace-trust false -- 'Execute the assigned Paperclip queue workload JAC-4173, titled '\"'\"'Coordinator Fleet Coordination Check'\"'\"', as a bounded read-only verification. You are running under Ringer as the registered Devin execution lane; Paperclip remains the authority. First inspect /Users/hermes/Vault/coordination/omnigent-dispatch/fleet/lane-registry.yaml and record the Devin lane contract, allowed scope, return-control rules, executable, and invocation metadata. Then inspect the live local Paperclip API at http://localhost:3101 for the company 87c32b8e-f131-4df8-ad8e-963d01b458e7: read the agent table and the nonterminal issue counts needed to report queue, active runs, and blockers. If the API is unavailable, record the exact HTTP or connection failure and use only local evidence; do not invent live results. Produce only report.md in the current task directory. The report must include these headings exactly: Result, Queue Snapshot, Active Runs, Lane Eligibility, Selected Work, Governance, Evidence, Risks, Next Adjustment. State that JAC-4173 was selected because it is a small, independent, read-only coordination check and that this run is the execution of that queued item. Include an ISO-8601 UTC timestamp, concrete endpoint/path evidence, and a PASS/DEGRADED/BLOCKED result. Do not modify source files, lane registry, Paperclip issues, statuses, assignments, agents, credentials, services, or external systems; do not send messages; do not create or close work. Return control to Ringer on failure, ambiguity, or out-of-scope findings.",
+        "",
+        "Previous attempt failed: [ringer.py] attempt 1 started 2026-08-02T18:44:33.375967+00:00",
+        "[ringer.py] engine: devin",
+        "[ringer.py] launch receipt: lr-01KZ1WNGYZR2CZHND4QFXM1JF8",
+        "[ringer.py] command: /Users/hermes/.local/bin/devin --print --permission-mode accept-edits --respect-workspace-trust false -- '\"'\"'Execute the assigned Paperclip queue workload JAC-4173, titled '\"'\"'\"'\"'\"'\"'\"'\"'Coordinator Fleet Coordination Check'\"'\"'\"'\"'\"'\"'\"'\"', as a bounded read-only verification. You are running under Ringer as the registered Devin execution lane; Paperclip remains the authority. First inspect /Users/hermes/Vault/coordination/omnigent-dispatch/fleet/lane-registry.yaml and record the Devin lane contract, allowed scope, return-control rules, executable, and invocation metadata. Then inspect the live local Paperclip API at http://localhost:3101 for the company 87c32b8e-f131-4df8-ad8e-963d01b458e7: read the agent table and the nonterminal issue counts needed to report queue, active runs, and blockers. If the API is unavailable, record the exact HTTP or connection failure and use only local evidence; do not invent live results. Produce only report.md in the current task directory. The report must include these headings exactly: Result, Queue Snapshot, Active Runs, Lane Eligibility, Selected Work, Governance, Evidence, Risks, Next Adjustment. State that JAC-4173 was selected because it is a small, independent, read-only coordination check and that this run is the execution of that queued item. Include an ISO-8601 UTC timestamp, concrete endpoint/path evidence, and a PASS/DEGRADED/BLOCKED result. Do not modify source files, lane registry, Paperclip issues, statuses, assignments, agents, credentials, services, or external systems; do not send messages; do not create or close work. Return control to Ringer on failure, ambiguity, or out-of-scope findings.'\"'\"' < /dev/null",
+        "warning: rejected a tool call that requires confirmation. Running in non-interactive mode. Use --permission-mode dangerous to auto-approve all tools.",
+        "warning: rejected a tool call that requires confirmation. Running in non-interactive mode. Use --permission-mode dangerous to auto-approve all tools.",
+        "[ringer.py] attempt 1 exited rc=0",
+        "[ringer] missing expected files: report.md",
+        "FAIL: report.md missing required evidence or headings: Result, Queue Snapshot, Active Runs, Lane Eligibility, Selected Work, Governance, Evidence, Risks, Next Adjustment, JAC-4173, 2026-08-02T. Fix it.' < /dev/null",
+        "warning: rejected a tool call that requires confirmation. Running in non-interactive mode. Use --permission-mode dangerous to auto-approve all tools.",
+        "warning: rejected a tool call that requires confirmation. Running in non-interactive mode. Use --permission-mode dangerous to auto-approve all tools.",
+        "[ringer.py] attempt 2 exited rc=0"
+      ],
+      "model": "",
+      "paperclip_issue": "JAC-4173",
+      "report_paths": {},
+      "routine_id": "",
+      "spec": "Execute the assigned Paperclip queue workload JAC-4173, titled 'Coordinator Fleet Coordination Check', as a bounded read-only verification. You are running under Ringer as the registered Devin execution lane; Paperclip remains the authority. First inspect /Users/hermes/Vault/coordination/omnigent-dispatch/fleet/lane-registry.yaml and record the Devin lane contract, allowed scope, return-control rules, executable, and invocation metadata. Then inspect the live local Paperclip API at http://localhost:3101 for the company 87c32b8e-f131-4df8-ad8e-963d01b458e7: read the agent table and the nonterminal issue counts needed to report queue, active runs, and blockers. If the API is unavailable, record the exact HTTP or connection failure and use only local evidence; do not invent live results. Produce only report.md in the current task directory. The report must include these headings exactly: Result, Queue Snapshot, Active Runs, Lane Eligibility, Selected Work, Governance, Evidence, Risks, Next Adjustment. State that JAC-4173 was selected because it is a small, independent, read-only coordination check and that this run is the execution of that queued item. Include an ISO-8601 UTC timestamp, concrete endpoint/path evidence, and a PASS/DEGRADED/BLOCKED result. Do not modify source files, lane registry, Paperclip issues, statuses, assignments, agents, credentials, services, or external systems; do not send messages; do not create or close work. Return control to Ringer on failure, ambiguity, or out-of-scope findings.",
+      "spec_short": "Execute the assigned Paperclip queue workload JAC-4173, titled 'Coordinator Fleet Coordination Check', as a bounded r...",
+      "status": "fail",
+      "taskdir": "/Users/hermes/Vault/coordination/omnigent-dispatch/runtime/work/omnigent-paperclip-jac4173-devin-workload-20260802T1845Z/jac4173-devin-workload",
+      "timeout_s": 900,
+      "tokens": null,
+      "verdict": "FAIL",
+      "verified": "JAC-4173 produced a timestamped read-only queue and lane eligibility report with executable evidence checks."
+    }
+  ],
+  "tokens": 0,
+  "totals": {
+    "done": 1,
+    "fail": 1,
+    "pass": 0,
+    "running": 0,
+    "tokens": 0
+  },
+  "fleet_projection": {
+    "projected_at": "2026-08-02T18:45:00.812977+00:00",
+    "run_id": "omnigent-paperclip-jac4173-devin-workload-20260802T1845Z-20260802T184433Z-p29961",
+    "issue_targets": [
+      {
+        "issue": "JAC-4173",
+        "outcome": "created",
+        "pre_state": "todo"
+      }
+    ],
+    "routine_goal_targets": []
+  }
+}

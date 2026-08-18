@@ -1,0 +1,15 @@
+
+[ringer.py] attempt 1 started 2026-07-24T23:36:25.990322+00:00
+[ringer.py] engine: mock
+[ringer.py] launch receipt: lr-01KYB7SG455FERVBHVE5TQZXZW
+[ringer.py] command: python3 /Users/hermes/ringer/engines/mock_worker.py 'MOCK_FILE: report.md
+{
+  "status": "PASS",
+  "source": "omnigent",
+  "route": "ringer",
+  "worker": 1,
+  "prompt": "Validate Omnigent can route a bounded prompt into Ringer without provider spend."
+}
+MOCK_END' < /dev/null
+mock-worker: wrote 1 file(s): report.md
+[ringer.py] attempt 1 exited rc=0

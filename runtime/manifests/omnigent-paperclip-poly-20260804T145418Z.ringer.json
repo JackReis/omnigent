@@ -1,0 +1,65 @@
+{
+  "run_name": "omnigent-paperclip-poly-20260804T145418Z",
+  "workdir": "/Users/hermes/Vault/coordination/omnigent-dispatch",
+  "risk": "medium",
+  "orchestrator": {
+    "provider": "local",
+    "model": "omnigent",
+    "family": "meta-harness",
+    "runtime": "omnigent-ringer",
+    "profile": "poly",
+    "harness": "hermes",
+    "orchestrator": "poly",
+    "attestation": "Bounded local dispatch through the existing Ringer execution spine"
+  },
+  "max_parallel": 2,
+  "worktrees": false,
+  "tasks": [
+    {
+      "key": "dispatch-1-kimi",
+      "engine": "kimi",
+      "task_type": "omnigent-fleet-dispatch",
+      "spec": "Fix the Ringer projector-paperclip bookkeeping contract so that projecting a receipt/comment to a blocked Paperclip issue does NOT reopen, assign, wake, continue, retry, or recover it by default. Require explicit opt-in mutation flags plus exact expected blocked pre-state and operator approval. Fix the projector contract in the source code and add regression tests covering blocked assigned/unassigned issues, duplicate comments, retry/recovery paths, and normal nonblocked projection. A live-safe canary must prove zero new Paperclip runs while projecting to a blocked test issue. Canonical Bead: hermes-tuzn. Acceptance criteria 1-6 must all pass.\n\nYou are fleet worker 1 of 2. Produce an independent result and do not coordinate through untracked channels.\n\nWrite a concise completion report to report.md in the current task directory.",
+      "check": "python3 -c 'from pathlib import Path; p=Path(\"report.md\"); raise SystemExit(0 if p.is_file() and p.stat().st_size else 1)'",
+      "expect_files": [
+        "report.md"
+      ],
+      "timeout_s": 1800,
+      "full_access": false,
+      "verified": "Worker produced a non-empty tracked completion report.",
+      "governance": {
+        "authority": "paperclip",
+        "execution_spine": "ringer",
+        "lifecycle_owner": "ringer",
+        "direct_omnigent_bypass": false,
+        "max_additional_attempts": 1,
+        "escalation": "paperclip_issue_owner_or_board"
+      },
+      "paperclip_issue": "JAC-4575",
+      "bead_id": "hermes-tuzn"
+    },
+    {
+      "key": "dispatch-2-mock",
+      "engine": "mock",
+      "task_type": "omnigent-fleet-dispatch",
+      "spec": "MOCK_FILE: report.md\n{\n  \"status\": \"PASS\",\n  \"source\": \"omnigent\",\n  \"route\": \"ringer\",\n  \"worker\": 2,\n  \"prompt\": \"Fix the Ringer projector-paperclip bookkeeping contract so that projecting a receipt/comment to a blocked Paperclip issue does NOT reopen, assign, wake, continue, retry, or recover it by default. Require explicit opt-in mutation flags plus exact expected blocked pre-state and operator approval. Fix the projector contract in the source code and add regression tests covering blocked assigned/unassigned issues, duplicate comments, retry/recovery paths, and normal nonblocked projection. A live-safe canary must prove zero new Paperclip runs while projecting to a blocked test issue. Canonical Bead: hermes-tuzn. Acceptance criteria 1-6 must all pass.\"\n}\nMOCK_END",
+      "check": "python3 -c 'from pathlib import Path; p=Path(\"report.md\"); raise SystemExit(0 if p.is_file() and p.stat().st_size else 1)'",
+      "expect_files": [
+        "report.md"
+      ],
+      "timeout_s": 1800,
+      "full_access": false,
+      "verified": "Worker produced a non-empty tracked completion report.",
+      "governance": {
+        "authority": "paperclip",
+        "execution_spine": "ringer",
+        "lifecycle_owner": "ringer",
+        "direct_omnigent_bypass": false,
+        "max_additional_attempts": 1,
+        "escalation": "paperclip_issue_owner_or_board"
+      },
+      "paperclip_issue": "JAC-4575",
+      "bead_id": "hermes-tuzn"
+    }
+  ]
+}

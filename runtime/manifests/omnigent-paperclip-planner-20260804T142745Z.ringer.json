@@ -1,0 +1,41 @@
+{
+  "run_name": "omnigent-paperclip-planner-20260804T142745Z",
+  "workdir": "/Users/hermes/Vault/coordination/omnigent-dispatch",
+  "risk": "medium",
+  "orchestrator": {
+    "provider": "local",
+    "model": "omnigent",
+    "family": "meta-harness",
+    "runtime": "omnigent-ringer",
+    "profile": "planner",
+    "harness": "claude-native",
+    "orchestrator": "single",
+    "attestation": "Bounded local dispatch through the existing Ringer execution spine"
+  },
+  "max_parallel": 1,
+  "worktrees": false,
+  "tasks": [
+    {
+      "key": "dispatch-1-kimi",
+      "engine": "kimi",
+      "task_type": "omnigent-fleet-dispatch",
+      "spec": "Decide and verify placement for Gmail, Google Calendar, and Fleet Memory: Aegis-native or Talaris-routed. No interactive/device-flow credential may be used. For an approved service, prepare a one-service-at-a-time enablement and verification plan; do not bulk-enable MCP clients. Each service must have an explicit Aegis-native or Talaris-routed decision with decision owner. Any Aegis-native option specifies a noninteractive credential source, least authority, health check, and rollback. Services without a noninteractive verified route remain disabled. Re-enable sequence is one at a time, with health/behavior verification gate between services. Decision record and evidence are durable.\n\nWrite a concise completion report to report.md in the current task directory.",
+      "check": "python3 -c 'from pathlib import Path; p=Path(\"report.md\"); raise SystemExit(0 if p.is_file() and p.stat().st_size else 1)'",
+      "expect_files": [
+        "report.md"
+      ],
+      "timeout_s": 1800,
+      "full_access": false,
+      "verified": "Worker produced a non-empty tracked completion report.",
+      "governance": {
+        "authority": "paperclip",
+        "execution_spine": "ringer",
+        "lifecycle_owner": "ringer",
+        "direct_omnigent_bypass": false,
+        "max_additional_attempts": 1,
+        "escalation": "paperclip_issue_owner_or_board"
+      },
+      "bead_id": "hermes-9ill.5"
+    }
+  ]
+}

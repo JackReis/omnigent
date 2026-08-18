@@ -1,0 +1,14 @@
+{
+  "ok": true,
+  "dry_run": true,
+  "run_name": "omnigent-paperclip-coder-20260804T142827Z",
+  "manifest_path": "/Users/hermes/Vault/coordination/omnigent-dispatch/runtime/manifests/omnigent-paperclip-coder-20260804T142827Z.ringer.json",
+  "workdir": "/Users/hermes/Vault/coordination/omnigent-dispatch",
+  "engines": [
+    "kimi"
+  ],
+  "returncode": 0,
+  "stdout": "DRY RUN: no codex workers will be spawned.\nRun: omnigent-paperclip-coder-20260804T142827Z\nIdentity: omnigent\nConfig: /Users/hermes/.config/ringer/config.toml\nWorkdir: /Users/hermes/Vault/coordination/omnigent-dispatch\nMax parallel: 1\nWorktrees: False repo=None\nState dir: /Users/hermes/.ringer\nEval backend: postgres\nDashboard: off\nArtifacts: on\n  live status page: /Users/hermes/.ringer/artifacts/omnigent-paperclip-coder-20260804T142827Z-20260804T142831Z-p79049.html\n  final report:     /Users/hermes/.ringer/artifacts/omnigent-paperclip-coder-20260804T142827Z-20260804T142831Z-p79049-report.html\n  runs index:       /Users/hermes/.ringer/artifacts/index.html\nTasks:\n  - dispatch-1-kimi\n    engine: kimi\n    dir: /Users/hermes/Vault/coordination/omnigent-dispatch/dispatch-1-kimi\n    timeout_s: 1800\n    full_access: false\n    expect_files: ['report.md']\n    check: python3 -c 'from pathlib import Path; p=Path(\"report.md\"); raise SystemExit(0 if p.is_file() and p.stat().st_size else 1)'\n    command: /Users/hermes/.kimi-code/bin/kimi --model kimi-for-coding/k2p7 --output-format stream-json --skills-dir /Users/hermes/.config/ringer/empty-skills --prompt 'Keep Vault-only and Talaris-specific wrappers disabled by default on Aegis. Add an explicit allowlist/retirement record and an admission checklist for any future SSH conversion. The wrapper set must not silently expand on startup. The startup allowlist exactly identifies enabled Aegis-safe clients. Vault-only/Talaris-specific clients are disabled or explicitly retired with reasons. Any SSH conversion requires noninteractive auth, narrow authority, health verification, and rollback evidence before enablement. A deterministic check fails if an unapproved wrapper enters startup. Artifact, verification, commit, push, and rollback are recorded.\n\nWrite a concise completion report to report.md in the current task directory.' < /dev/null\n",
+  "stderr": "",
+  "receipt_path": "/Users/hermes/Vault/coordination/omnigent-dispatch/runtime/receipts/omnigent-paperclip-coder-20260804T142827Z.json"
+}

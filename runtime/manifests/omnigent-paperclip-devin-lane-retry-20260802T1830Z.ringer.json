@@ -1,0 +1,27 @@
+{
+  "run_name": "omnigent-paperclip-devin-lane-retry-20260802T1830Z",
+  "workdir": "/Users/hermes/Vault/coordination/omnigent-dispatch/runtime/work/omnigent-paperclip-devin-lane-retry-20260802T1830Z",
+  "risk": "low",
+  "orchestrator": {"provider": "local", "model": "devin", "family": "registered-lane", "runtime": "ringer", "profile": "planner", "harness": "devin", "orchestrator": "single", "attestation": "Ringer-owned bounded retry through the Paperclip-authorized Devin lane"},
+  "max_parallel": 1,
+  "worktrees": false,
+  "tasks": [{
+    "key": "devin-lane-retry",
+    "engine": "devin",
+    "task_type": "lane-contract-smoke-and-workload",
+    "spec": "Perform a bounded read-only Devin lane workload through Ringer. Validate the local Devin and Cursor adapter commands, config/state paths, and registered lane metadata in /Users/hermes/Vault/coordination/omnigent-dispatch/fleet/lane-registry.yaml; confirm this task is running under the registered Devin lane with Paperclip authority and Ringer as the execution spine; then write a concise evidence report from the registry and local adapter metadata. Do not modify repository files, call Paperclip APIs, assign or update issues, create agents, restart services, expose secrets, or access the network. The only file you may create is report.md in the current task directory. Required headings: Result, Adapter Checks, Lane Mapping, Smoke Gate, Workload, Governance, Risks, Next Adjustment. Include concrete command/path evidence and any limitation encountered.",
+    "check": "python3 -c 'from pathlib import Path; p=Path(\"report.md\"); text=p.read_text() if p.is_file() else \"\"; required=[\"Result\", \"Adapter Checks\", \"Lane Mapping\", \"Smoke Gate\", \"Workload\", \"Governance\", \"Risks\", \"Next Adjustment\"]; assert p.is_file() and p.stat().st_size > 500 and all(h in text for h in required), \"report.md missing or incomplete\"'",
+    "expect_files": ["report.md"],
+    "timeout_s": 900,
+    "full_access": false,
+    "verified": "Devin produced a non-empty read-only report after adapter validation, lane smoke, and the bounded registry workload.",
+    "governance": {"authority": "paperclip", "execution_spine": "ringer", "direct_omnigent_bypass": false},
+    "lane": "devin",
+    "lane_contract_version": "1.0.0",
+    "adapter_version": "1.0.0",
+    "policy_version": "1.0.0",
+    "capability_mapping": {"contract_version": "1.0.0", "capabilities": ["orchestration", "environment_setup", "cross_service_coordination"]},
+    "paths": {"executable": "devin", "config": "~/.config/devin/config.json", "state": "~/.config/devin"},
+    "invocation": {"args": ["--print", "--permission-mode", "dangerous", "--respect-workspace-trust", "false", "--"]}
+  }]
+}

@@ -1,0 +1,37 @@
+{
+  "run_name": "omnigent-paperclip-gateway-recovery-20260801-20260801T201027Z",
+  "workdir": "/Users/hermes/Vault/coordination/omnigent-dispatch/runtime/batch-20260801/lane-c",
+  "risk": "medium",
+  "orchestrator": {
+    "provider": "local",
+    "model": "omnigent",
+    "family": "meta-harness",
+    "runtime": "omnigent-ringer",
+    "profile": "planner",
+    "harness": "claude-native",
+    "orchestrator": "single",
+    "attestation": "Bounded local dispatch through the existing Ringer execution spine"
+  },
+  "max_parallel": 1,
+  "worktrees": false,
+  "tasks": [
+    {
+      "key": "dispatch-1-kimi",
+      "engine": "kimi",
+      "task_type": "omnigent-fleet-dispatch",
+      "spec": "Paperclip is healthy on http://localhost:3101. This is a READ-ONLY triage pass. Do not PATCH issues, assign agents, approve hires, modify repositories, expose secrets, restart services, or run risky commands. Use only GET/read-only inspection and produce a concise report.md with: issue cluster, current blocker, evidence, safe next action, dependencies, verification commands, and whether it is safe to dispatch implementation next. Treat Paperclip as authority and preserve the four-lane guardrail.\\nLane C GATEWAY AND AGENT RECOVERY: inspect current blockers and dependency chain for JAC-4383, JAC-3918, JAC-4030, JAC-3660, JAC-4215, JAC-4235, JAC-3897, JAC-4136, JAC-3866, JAC-3252, JAC-3919. Focus on listener ownership, auth configuration presence without printing secrets, runtime/adapter failures, and safe recovery steps.\n\nWrite a concise completion report to report.md in the current task directory.",
+      "check": "python3 -c 'from pathlib import Path; p=Path(\"report.md\"); raise SystemExit(0 if p.is_file() and p.stat().st_size else 1)'",
+      "expect_files": [
+        "report.md"
+      ],
+      "timeout_s": 1800,
+      "full_access": false,
+      "verified": "Worker produced a non-empty tracked completion report.",
+      "governance": {
+        "authority": "paperclip",
+        "execution_spine": "ringer",
+        "direct_omnigent_bypass": false
+      }
+    }
+  ]
+}

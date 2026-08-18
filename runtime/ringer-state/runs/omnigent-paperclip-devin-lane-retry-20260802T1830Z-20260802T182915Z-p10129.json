@@ -1,0 +1,114 @@
+{
+  "artifact_path": "/Users/hermes/Vault/coordination/omnigent-dispatch/runtime/ringer-state/artifacts/omnigent-paperclip-devin-lane-retry-20260802T1830Z-20260802T182915Z-p10129.html",
+  "contract_review": null,
+  "contract_sha256": "b992d4f3fe6c7cc61744663a8c4d8dee71f7df4d7d56d4fc13d472eba057e14d",
+  "dashboard_port": null,
+  "elapsed_s": 77.9,
+  "fail": 0,
+  "finished": true,
+  "identity": "omnigent",
+  "live_path": "/Users/hermes/Vault/coordination/omnigent-dispatch/runtime/ringer-state/artifacts/live/omnigent-paperclip-devin-lane-retry-20260802T1830Z.html",
+  "max_parallel": 1,
+  "orchestrator": {
+    "attestation": "Ringer-owned bounded retry through the Paperclip-authorized Devin lane",
+    "family": "registered-lane",
+    "harness": "devin",
+    "model": "devin",
+    "orchestrator": "single",
+    "profile": "planner",
+    "provider": "local",
+    "runtime": "ringer"
+  },
+  "pass": 1,
+  "pid": 10129,
+  "port": null,
+  "report_path": "/Users/hermes/Vault/coordination/omnigent-dispatch/runtime/ringer-state/artifacts/omnigent-paperclip-devin-lane-retry-20260802T1830Z-20260802T182915Z-p10129-report.html",
+  "report_ready": true,
+  "risk": "low",
+  "run_id": "omnigent-paperclip-devin-lane-retry-20260802T1830Z-20260802T182915Z-p10129",
+  "run_name": "omnigent-paperclip-devin-lane-retry-20260802T1830Z",
+  "started_at": "2026-08-02T18:29:15.465534+00:00",
+  "state": "finished",
+  "summary": {
+    "fail": 0,
+    "pass": 1,
+    "tokens": 0
+  },
+  "tasks": [
+    {
+      "activity": "No repository files were modified, no Paperclip API calls were made, and no n...",
+      "attempts": 1,
+      "bead_id": "",
+      "check": "python3 -c 'from pathlib import Path; p=Path(\"report.md\"); text=p.read_text() if p.is_file() else \"\"; required=[\"Result\", \"Adapter Checks\", \"Lane Mapping\", \"Smoke Gate\", \"Workload\", \"Governance\", \"Risks\", \"Next Adjustment\"]; assert p.is_file() and p.stat().st_size > 500 and all(h in text for h in required), \"report.md missing or incomplete\"'",
+      "check_output_tail": "",
+      "check_returncode": 0,
+      "check_timed_out": false,
+      "children": 0,
+      "deliverable_notes": [],
+      "deliverables": [
+        {
+          "bytes": 5930,
+          "name": "report.md",
+          "path": "/Users/hermes/Vault/coordination/omnigent-dispatch/runtime/ringer-state/artifacts/deliverables/omnigent-paperclip-devin-lane-retry-20260802T1830Z-20260802T182915Z-p10129/devin-lane-retry/report.md"
+        }
+      ],
+      "elapsed_s": 77.9,
+      "engine": "devin",
+      "goal_id": "",
+      "key": "devin-lane-retry",
+      "log_path": "/Users/hermes/Vault/coordination/omnigent-dispatch/runtime/work/omnigent-paperclip-devin-lane-retry-20260802T1830Z/devin-lane-retry/worker.log",
+      "log_tail": [
+        "",
+        "No repository files were modified, no Paperclip API calls were made, and no network access was used. The key finding to act on is the invocation-policy mismatch: the registry lists `accept-edits`, while the actual Ringer launch used `--permission-mode dangerous`.",
+        "[ringer.py] attempt 1 exited rc=0"
+      ],
+      "log_tail_full": [
+        "",
+        "[ringer.py] attempt 1 started 2026-08-02T18:29:15.516247+00:00",
+        "[ringer.py] engine: devin",
+        "[ringer.py] launch receipt: lr-01KZ1VSGKV7Q3CHY9EJ5J6SGFA",
+        "[ringer.py] command: /Users/hermes/.local/bin/devin --print --permission-mode dangerous --respect-workspace-trust false -- 'Perform a bounded read-only Devin lane workload through Ringer. Validate the local Devin and Cursor adapter commands, config/state paths, and registered lane metadata in /Users/hermes/Vault/coordination/omnigent-dispatch/fleet/lane-registry.yaml; confirm this task is running under the registered Devin lane with Paperclip authority and Ringer as the execution spine; then write a concise evidence report from the registry and local adapter metadata. Do not modify repository files, call Paperclip APIs, assign or update issues, create agents, restart services, expose secrets, or access the network. The only file you may create is report.md in the current task directory. Required headings: Result, Adapter Checks, Lane Mapping, Smoke Gate, Workload, Governance, Risks, Next Adjustment. Include concrete command/path evidence and any limitation encountered.' < /dev/null",
+        "The bounded read-only audit is complete. I verified the local `devin` and `cursor-agent` binaries/config paths, read the lane registry, and confirmed this run is a Ringer-launched Devin lane for the `omnigent-paperclip-devin-lane-retry` task.",
+        "",
+        "Evidence report written to:",
+        "",
+        "`/Users/hermes/Vault/coordination/omnigent-dispatch/runtime/work/omnigent-paperclip-devin-lane-retry-20260802T1830Z/devin-lane-retry/report.md`",
+        "",
+        "No repository files were modified, no Paperclip API calls were made, and no network access was used. The key finding to act on is the invocation-policy mismatch: the registry lists `accept-edits`, while the actual Ringer launch used `--permission-mode dangerous`.",
+        "[ringer.py] attempt 1 exited rc=0"
+      ],
+      "model": "",
+      "paperclip_issue": "JAC-LANE-RUN-20260802",
+      "report_paths": {},
+      "routine_id": "",
+      "spec": "Perform a bounded read-only Devin lane workload through Ringer. Validate the local Devin and Cursor adapter commands, config/state paths, and registered lane metadata in /Users/hermes/Vault/coordination/omnigent-dispatch/fleet/lane-registry.yaml; confirm this task is running under the registered Devin lane with Paperclip authority and Ringer as the execution spine; then write a concise evidence report from the registry and local adapter metadata. Do not modify repository files, call Paperclip APIs, assign or update issues, create agents, restart services, expose secrets, or access the network. The only file you may create is report.md in the current task directory. Required headings: Result, Adapter Checks, Lane Mapping, Smoke Gate, Workload, Governance, Risks, Next Adjustment. Include concrete command/path evidence and any limitation encountered.",
+      "spec_short": "Perform a bounded read-only Devin lane workload through Ringer. Validate the local Devin and Cursor adapter commands,...",
+      "status": "pass",
+      "taskdir": "/Users/hermes/Vault/coordination/omnigent-dispatch/runtime/work/omnigent-paperclip-devin-lane-retry-20260802T1830Z/devin-lane-retry",
+      "timeout_s": 900,
+      "tokens": null,
+      "verdict": "PASS",
+      "verified": "Devin produced a non-empty read-only report after adapter validation, lane smoke, and the bounded registry workload."
+    }
+  ],
+  "tokens": 0,
+  "totals": {
+    "done": 1,
+    "fail": 0,
+    "pass": 1,
+    "running": 0,
+    "tokens": 0
+  },
+  "fleet_projection": {
+    "projected_at": "2026-08-02T18:30:33.574975+00:00",
+    "run_id": "omnigent-paperclip-devin-lane-retry-20260802T1830Z-20260802T182915Z-p10129",
+    "issue_targets": [
+      {
+        "issue": "JAC-LANE-RUN-20260802",
+        "outcome": "skipped_preflight_error",
+        "error": "HTTP 404"
+      }
+    ],
+    "routine_goal_targets": []
+  }
+}

@@ -1,0 +1,13 @@
+
+[ringer.py] attempt 1 started 2026-08-02T18:29:15.516247+00:00
+[ringer.py] engine: devin
+[ringer.py] launch receipt: lr-01KZ1VSGKV7Q3CHY9EJ5J6SGFA
+[ringer.py] command: /Users/hermes/.local/bin/devin --print --permission-mode dangerous --respect-workspace-trust false -- 'Perform a bounded read-only Devin lane workload through Ringer. Validate the local Devin and Cursor adapter commands, config/state paths, and registered lane metadata in /Users/hermes/Vault/coordination/omnigent-dispatch/fleet/lane-registry.yaml; confirm this task is running under the registered Devin lane with Paperclip authority and Ringer as the execution spine; then write a concise evidence report from the registry and local adapter metadata. Do not modify repository files, call Paperclip APIs, assign or update issues, create agents, restart services, expose secrets, or access the network. The only file you may create is report.md in the current task directory. Required headings: Result, Adapter Checks, Lane Mapping, Smoke Gate, Workload, Governance, Risks, Next Adjustment. Include concrete command/path evidence and any limitation encountered.' < /dev/null
+The bounded read-only audit is complete. I verified the local `devin` and `cursor-agent` binaries/config paths, read the lane registry, and confirmed this run is a Ringer-launched Devin lane for the `omnigent-paperclip-devin-lane-retry` task.
+
+Evidence report written to:
+
+`/Users/hermes/Vault/coordination/omnigent-dispatch/runtime/work/omnigent-paperclip-devin-lane-retry-20260802T1830Z/devin-lane-retry/report.md`
+
+No repository files were modified, no Paperclip API calls were made, and no network access was used. The key finding to act on is the invocation-policy mismatch: the registry lists `accept-edits`, while the actual Ringer launch used `--permission-mode dangerous`.
+[ringer.py] attempt 1 exited rc=0

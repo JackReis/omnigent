@@ -1,0 +1,49 @@
+{
+  "schema": "fleet-service-update/v1",
+  "event_id": "db42606c5a1e6677b52c",
+  "event": "completion",
+  "durable_ref": "handle-the-high-capability-investigation",
+  "occurred_at": "2026-08-05T20:21:00.788016+00:00",
+  "route": {
+    "route": "ringer-omnigent",
+    "profile": "planner",
+    "reason": "heavy worker requested"
+  },
+  "evidence": {
+    "manifest": "manifest.json",
+    "receipt": "receipt.json",
+    "artifacts": []
+  },
+  "deliveries": {
+    "holographic": {
+      "status": "queued",
+      "attempts": 0
+    },
+    "honcho": {
+      "status": "queued",
+      "attempts": 0
+    },
+    "hindsight": {
+      "status": "queued",
+      "attempts": 0
+    },
+    "openbrain1": {
+      "status": "queued",
+      "attempts": 0
+    },
+    "gbrain": {
+      "status": "queued",
+      "attempts": 0
+    },
+    "vaults": {
+      "status": "queued",
+      "attempts": 0
+    }
+  },
+  "retry": {
+    "policy": "exponential",
+    "base_seconds": 30,
+    "max_seconds": 3600,
+    "never_drop": true
+  }
+}

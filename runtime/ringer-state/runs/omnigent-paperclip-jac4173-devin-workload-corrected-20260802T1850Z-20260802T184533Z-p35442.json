@@ -1,0 +1,113 @@
+{
+  "artifact_path": "/Users/hermes/Vault/coordination/omnigent-dispatch/runtime/ringer-state/artifacts/omnigent-paperclip-jac4173-devin-workload-corrected-20260802T1850Z-20260802T184533Z-p35442.html",
+  "contract_review": null,
+  "contract_sha256": "4487838653e46e8b05391647fdb5b034c8ef53d1c06fc8fbbd3ed2afd1e69e48",
+  "dashboard_port": null,
+  "elapsed_s": 67.2,
+  "fail": 0,
+  "finished": true,
+  "identity": "omnigent",
+  "live_path": "/Users/hermes/Vault/coordination/omnigent-dispatch/runtime/ringer-state/artifacts/live/omnigent-paperclip-jac4173-devin-workload-corrected-20260802T1850Z.html",
+  "max_parallel": 1,
+  "orchestrator": {
+    "attestation": "Ringer-owned bounded workload for Paperclip JAC-4173 through the Devin lane; dangerous mode is a temporary non-interactive confirmation workaround and is reported as invocation drift",
+    "family": "registered-lane",
+    "harness": "devin",
+    "model": "devin",
+    "orchestrator": "single",
+    "profile": "review",
+    "provider": "local",
+    "runtime": "ringer"
+  },
+  "pass": 1,
+  "pid": 35442,
+  "port": null,
+  "report_path": "/Users/hermes/Vault/coordination/omnigent-dispatch/runtime/ringer-state/artifacts/omnigent-paperclip-jac4173-devin-workload-corrected-20260802T1850Z-20260802T184533Z-p35442-report.html",
+  "report_ready": true,
+  "risk": "low",
+  "run_id": "omnigent-paperclip-jac4173-devin-workload-corrected-20260802T1850Z-20260802T184533Z-p35442",
+  "run_name": "omnigent-paperclip-jac4173-devin-workload-corrected-20260802T1850Z",
+  "started_at": "2026-08-02T18:45:33.112533+00:00",
+  "state": "finished",
+  "summary": {
+    "fail": 0,
+    "pass": 1,
+    "tokens": 0
+  },
+  "tasks": [
+    {
+      "activity": "- **Invocation drift flagged** in the report: the registered `--permission-mo...",
+      "attempts": 1,
+      "bead_id": "",
+      "check": "python3 -c 'from pathlib import Path; import re; p=Path(\"report.md\"); text=p.read_text() if p.is_file() else \"\"; required=[\"Result\", \"Queue Snapshot\", \"Active Runs\", \"Lane Eligibility\", \"Selected Work\", \"Governance\", \"Evidence\", \"Risks\", \"Next Adjustment\", \"JAC-4173\", \"2026-08-02T\", \"invocation drift\"]; missing=[h for h in required if h.lower() not in text.lower()]; ok=p.is_file() and p.stat().st_size > 900 and not missing and re.search(r\"\\b(PASS|DEGRADED|BLOCKED)\\b\", text); raise SystemExit(0 if ok else (print(\"FAIL: report.md missing required evidence or headings: \" + \", \".join(missing)), 1)[1])'",
+      "check_output_tail": "",
+      "check_returncode": 0,
+      "check_timed_out": false,
+      "children": 0,
+      "deliverable_notes": [],
+      "deliverables": [
+        {
+          "bytes": 5087,
+          "name": "report.md",
+          "path": "/Users/hermes/Vault/coordination/omnigent-dispatch/runtime/ringer-state/artifacts/deliverables/omnigent-paperclip-jac4173-devin-workload-corrected-20260802T1850Z-20260802T184533Z-p35442/jac4173-devin-workload-corrected/report.md"
+        }
+      ],
+      "elapsed_s": 67.2,
+      "engine": "devin",
+      "goal_id": "",
+      "key": "jac4173-devin-workload-corrected",
+      "log_path": "/Users/hermes/Vault/coordination/omnigent-dispatch/runtime/work/omnigent-paperclip-jac4173-devin-workload-corrected-20260802T1850Z/jac4173-devin-workload-corrected/worker.log",
+      "log_tail": [
+        "- **Control returned to Ringer** via the report.",
+        "- **Invocation drift flagged** in the report: the registered `--permission-mode accept-edits` invocation rejected non-interactive confirmation, and this run was completed under `dangerous` permission mode. The lane registry should be reconciled so the next Ringer execution does not require the same override.",
+        "[ringer.py] attempt 1 exited rc=0"
+      ],
+      "log_tail_full": [
+        "",
+        "[ringer.py] attempt 1 started 2026-08-02T18:45:33.170484+00:00",
+        "[ringer.py] engine: devin",
+        "[ringer.py] launch receipt: lr-01KZ1WQBBJDBN2S6SQA7VTVM99",
+        "[ringer.py] command: /Users/hermes/.local/bin/devin --print --permission-mode dangerous --respect-workspace-trust false -- 'Execute the assigned Paperclip queue workload JAC-4173, titled '\"'\"'Coordinator Fleet Coordination Check'\"'\"', as a bounded read-only verification. You are running under Ringer as the registered Devin execution lane; Paperclip remains the authority. First inspect /Users/hermes/Vault/coordination/omnigent-dispatch/fleet/lane-registry.yaml and record the Devin lane contract, allowed scope, return-control rules, executable, and registered invocation metadata. Then inspect the live local Paperclip API at http://localhost:3101 for the company 87c32b8e-f131-4df8-ad8e-963d01b458e7: read the agent table and the nonterminal issue counts needed to report queue, active runs, and blockers. If the API is unavailable, record the exact HTTP or connection failure and use only local evidence; do not invent live results. Produce only report.md in the current task directory. The report must include these headings exactly: Result, Queue Snapshot, Active Runs, Lane Eligibility, Selected Work, Governance, Evidence, Risks, Next Adjustment. State that JAC-4173 was selected because it is a small, independent, read-only coordination check and that this run is the execution of that queued item. Include an ISO-8601 UTC timestamp, concrete endpoint/path evidence, and a PASS/DEGRADED/BLOCKED result. Explicitly record that the registered accept-edits invocation rejected non-interactive confirmations and that this corrected run used dangerous mode only to complete the read-only verification; flag this as invocation drift requiring follow-up. Do not modify source files, lane registry, Paperclip issues, statuses, assignments, agents, credentials, services, or external systems; do not send messages; do not create or close work. Return control to Ringer on failure, ambiguity, or out-of-scope findings.' < /dev/null",
+        "JAC-4173 verification complete.",
+        "",
+        "- **Result:** PASS",
+        "- **Artifact:** [report.md](file:///Users/hermes/Vault/coordination/omnigent-dispatch/runtime/work/omnigent-paperclip-jac4173-devin-workload-corrected-20260802T1850Z/jac4173-devin-workload-corrected/report.md)",
+        "- **Control returned to Ringer** via the report.",
+        "- **Invocation drift flagged** in the report: the registered `--permission-mode accept-edits` invocation rejected non-interactive confirmation, and this run was completed under `dangerous` permission mode. The lane registry should be reconciled so the next Ringer execution does not require the same override.",
+        "[ringer.py] attempt 1 exited rc=0"
+      ],
+      "model": "",
+      "paperclip_issue": "JAC-4173",
+      "report_paths": {},
+      "routine_id": "",
+      "spec": "Execute the assigned Paperclip queue workload JAC-4173, titled 'Coordinator Fleet Coordination Check', as a bounded read-only verification. You are running under Ringer as the registered Devin execution lane; Paperclip remains the authority. First inspect /Users/hermes/Vault/coordination/omnigent-dispatch/fleet/lane-registry.yaml and record the Devin lane contract, allowed scope, return-control rules, executable, and registered invocation metadata. Then inspect the live local Paperclip API at http://localhost:3101 for the company 87c32b8e-f131-4df8-ad8e-963d01b458e7: read the agent table and the nonterminal issue counts needed to report queue, active runs, and blockers. If the API is unavailable, record the exact HTTP or connection failure and use only local evidence; do not invent live results. Produce only report.md in the current task directory. The report must include these headings exactly: Result, Queue Snapshot, Active Runs, Lane Eligibility, Selected Work, Governance, Evidence, Risks, Next Adjustment. State that JAC-4173 was selected because it is a small, independent, read-only coordination check and that this run is the execution of that queued item. Include an ISO-8601 UTC timestamp, concrete endpoint/path evidence, and a PASS/DEGRADED/BLOCKED result. Explicitly record that the registered accept-edits invocation rejected non-interactive confirmations and that this corrected run used dangerous mode only to complete the read-only verification; flag this as invocation drift requiring follow-up. Do not modify source files, lane registry, Paperclip issues, statuses, assignments, agents, credentials, services, or external systems; do not send messages; do not create or close work. Return control to Ringer on failure, ambiguity, or out-of-scope findings.",
+      "spec_short": "Execute the assigned Paperclip queue workload JAC-4173, titled 'Coordinator Fleet Coordination Check', as a bounded r...",
+      "status": "pass",
+      "taskdir": "/Users/hermes/Vault/coordination/omnigent-dispatch/runtime/work/omnigent-paperclip-jac4173-devin-workload-corrected-20260802T1850Z/jac4173-devin-workload-corrected",
+      "timeout_s": 900,
+      "tokens": null,
+      "verdict": "PASS",
+      "verified": "JAC-4173 produced a timestamped read-only queue and lane eligibility report with executable evidence checks; invocation drift is explicitly recorded."
+    }
+  ],
+  "tokens": 0,
+  "totals": {
+    "done": 1,
+    "fail": 0,
+    "pass": 1,
+    "running": 0,
+    "tokens": 0
+  },
+  "fleet_projection": {
+    "projected_at": "2026-08-02T18:46:40.651068+00:00",
+    "run_id": "omnigent-paperclip-jac4173-devin-workload-corrected-20260802T1850Z-20260802T184533Z-p35442",
+    "issue_targets": [
+      {
+        "issue": "JAC-4173",
+        "outcome": "created",
+        "pre_state": "todo"
+      }
+    ],
+    "routine_goal_targets": []
+  }
+}

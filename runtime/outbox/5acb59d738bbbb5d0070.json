@@ -1,0 +1,49 @@
+{
+  "schema": "fleet-service-update/v1",
+  "event_id": "5acb59d738bbbb5d0070",
+  "event": "completion",
+  "durable_ref": "JAC-ROUTER-SMOKE",
+  "occurred_at": "2026-07-31T02:21:30.670025+00:00",
+  "route": {
+    "route": "ringer-omnigent",
+    "profile": "poly",
+    "reason": "meta-harness coordination requested"
+  },
+  "evidence": {
+    "manifest": "/Users/hermes/Vault/coordination/omnigent-dispatch/runtime/manifests/omnigent-paperclip-poly-20260731T022130Z.ringer.json",
+    "receipt": "/Users/hermes/Vault/coordination/omnigent-dispatch/runtime/receipts/omnigent-paperclip-poly-20260731T022130Z.json",
+    "artifacts": []
+  },
+  "deliveries": {
+    "holographic": {
+      "status": "queued",
+      "attempts": 0
+    },
+    "honcho": {
+      "status": "queued",
+      "attempts": 0
+    },
+    "hindsight": {
+      "status": "queued",
+      "attempts": 0
+    },
+    "openbrain1": {
+      "status": "queued",
+      "attempts": 0
+    },
+    "gbrain": {
+      "status": "queued",
+      "attempts": 0
+    },
+    "vaults": {
+      "status": "queued",
+      "attempts": 0
+    }
+  },
+  "retry": {
+    "policy": "exponential",
+    "base_seconds": 30,
+    "max_seconds": 3600,
+    "never_drop": true
+  }
+}

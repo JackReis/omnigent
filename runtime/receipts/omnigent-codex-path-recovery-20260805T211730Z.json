@@ -1,0 +1,14 @@
+{
+  "ok": true,
+  "dry_run": true,
+  "run_name": "omnigent-codex-path-recovery-20260805T211730Z",
+  "manifest_path": "/Users/hermes/Vault/coordination/omnigent-dispatch/runtime/manifests/omnigent-codex-path-recovery-20260805T211730Z.ringer.json",
+  "workdir": "/Users/hermes/Vault/coordination/omnigent-dispatch/runtime/work/omnigent-codex-path-recovery-20260805T211730Z",
+  "engines": [
+    "mock"
+  ],
+  "returncode": 0,
+  "stdout": "DRY RUN: no codex workers will be spawned.\nRun: omnigent-codex-path-recovery-20260805T211730Z\nIdentity: omnigent\nConfig: /Users/hermes/.config/ringer/config.toml\nWorkdir: /Users/hermes/Vault/coordination/omnigent-dispatch/runtime/work/omnigent-codex-path-recovery-20260805T211730Z\nMax parallel: 1\nWorktrees: False repo=None\nState dir: /Users/hermes/.ringer\nEval backend: jsonl\nDashboard: off\nArtifacts: on\n  live status page: /Users/hermes/.ringer/artifacts/omnigent-codex-path-recovery-20260805T211730Z-20260805T211730Z-p79923.html\n  final report:     /Users/hermes/.ringer/artifacts/omnigent-codex-path-recovery-20260805T211730Z-20260805T211730Z-p79923-report.html\n  runs index:       /Users/hermes/.ringer/artifacts/index.html\nTasks:\n  - dispatch-1-mock\n    engine: mock\n    dir: /Users/hermes/Vault/coordination/omnigent-dispatch/runtime/work/omnigent-codex-path-recovery-20260805T211730Z/dispatch-1-mock\n    timeout_s: 1800\n    full_access: false\n    expect_files: ['report.md']\n    check: python3 -c 'from pathlib import Path; p=Path(\"report.md\"); raise SystemExit(0 if p.is_file() and p.stat().st_size else 1)'\n    command: python3 /Users/hermes/ringer/engines/mock_worker.py 'MOCK_FILE: report.md\n{\n  \"status\": \"PASS\",\n  \"source\": \"omnigent\",\n  \"route\": \"ringer\",\n  \"worker\": 1,\n  \"prompt\": \"Validate the fleet route without launching a worker\"\n}\nMOCK_END' < /dev/null\n",
+  "stderr": "",
+  "receipt_path": "/Users/hermes/Vault/coordination/omnigent-dispatch/runtime/receipts/omnigent-codex-path-recovery-20260805T211730Z.json"
+}

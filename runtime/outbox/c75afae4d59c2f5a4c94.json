@@ -1,0 +1,49 @@
+{
+  "schema": "fleet-service-update/v1",
+  "event_id": "c75afae4d59c2f5a4c94",
+  "event": "completion",
+  "durable_ref": "design-the-high-capability-continuous-orchestrat",
+  "occurred_at": "2026-08-05T21:32:59.629627+00:00",
+  "route": {
+    "route": "ringer-omnigent",
+    "profile": "planner",
+    "reason": "heavy worker requested"
+  },
+  "evidence": {
+    "manifest": "/Users/hermes/Vault/coordination/omnigent-dispatch/runtime/manifests/omnigent-paperclip-planner-20260805T213259Z.ringer.json",
+    "receipt": "/Users/hermes/Vault/coordination/omnigent-dispatch/runtime/receipts/omnigent-paperclip-planner-20260805T213259Z.json",
+    "artifacts": []
+  },
+  "deliveries": {
+    "holographic": {
+      "status": "queued",
+      "attempts": 0
+    },
+    "honcho": {
+      "status": "queued",
+      "attempts": 0
+    },
+    "hindsight": {
+      "status": "queued",
+      "attempts": 0
+    },
+    "openbrain1": {
+      "status": "queued",
+      "attempts": 0
+    },
+    "gbrain": {
+      "status": "queued",
+      "attempts": 0
+    },
+    "vaults": {
+      "status": "queued",
+      "attempts": 0
+    }
+  },
+  "retry": {
+    "policy": "exponential",
+    "base_seconds": 30,
+    "max_seconds": 3600,
+    "never_drop": true
+  }
+}

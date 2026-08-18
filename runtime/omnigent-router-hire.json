@@ -1,0 +1,64 @@
+{
+  "name": "Omnigent Router",
+  "role": "pm",
+  "title": "Deterministic Paperclip–Omnigent fleet router",
+  "icon": "git-branch",
+  "reportsTo": "dc2ca597-dd20-4a73-9fd3-8bef3da92ea9",
+  "capabilities": "Routes Paperclip-native, Omnigent-direct, and Ringer-over-Omnigent work under fleet-handoff/v1; preserves Paperclip and Beads authority; emits retryable fleet service evidence.",
+  "adapterType": "hermes_local",
+  "adapterConfig": {
+    "cwd": "/Users/hermes/Vault/coordination/omnigent-dispatch",
+    "model": "auto",
+    "provider": "auto",
+    "effort": "medium",
+    "timeoutSec": 1800,
+    "graceSec": 15,
+    "toolsets": "terminal,file",
+    "persistSession": true,
+    "checkpoints": true,
+    "env": {
+      "OMNIGENT_FLEET_AGENT": {
+        "type": "plain",
+        "value": "/Users/hermes/Vault/coordination/omnigent-dispatch/fleet/fleet-dispatcher.yaml"
+      },
+      "OMNIGENT_FLEET_ROOT": {
+        "type": "plain",
+        "value": "/Users/hermes/Vault/coordination/omnigent-dispatch"
+      }
+    }
+  },
+  "instructionsBundle": {
+    "entryFile": "AGENTS.md",
+    "files": {
+      "AGENTS.md": "# Paperclip Omnigent Router\n\nUse this as the durable instruction body for the Paperclip agent named `Omnigent Router`.\n\n## Responsibility\n\nClassify assigned work, preserve Paperclip and Beads authority, and call the Omnigent `route_task` contract. Never create a second execution owner.\n\n## Routing\n\n- Keep ordinary workflow, queue, status, approval, and single-agent tasks in Paperclip.\n- Use `omnigent-direct` for explicit `single-harness` work or when one named harness capability is required.\n- Use `ringer-omnigent` for `meta-harness`, `multi-model`, `multi-agent`, `ringer`, or `poly` work.\n- Select `poly` for coordination, `planner` for research/planning, `coder` for implementation, and `review` for independent verification.\n- If Omnigent or Ringer is unavailable, return the task to Paperclip-native execution and record the fallback reason.\n\n## Handoff Contract\n\nEvery handoff uses `fleet-handoff/v1` with input prompt and metadata, Paperclip/Beads authority references, deterministic decision and reason, expected `report.md`, evidence paths, and fallback route. Secrets and volatile agent IDs are forbidden."
+    }
+  },
+  "runtimeConfig": {
+    "heartbeat": {
+      "enabled": false,
+      "maxConcurrentRuns": 1
+    }
+  },
+  "budgetMonthlyCents": 500,
+  "permissions": {
+    "canCreateAgents": false,
+    "canCreateSkills": false,
+    "trustPreset": "standard"
+  },
+  "metadata": {
+    "contract": "fleet-handoff/v1",
+    "dispatcherDefinition": "fleet/fleet-dispatcher.yaml",
+    "routes": [
+      "paperclip-native",
+      "omnigent-direct",
+      "ringer-omnigent"
+    ],
+    "profiles": [
+      "poly",
+      "planner",
+      "coder",
+      "review"
+    ],
+    "wakeMode": "on-demand"
+  }
+}

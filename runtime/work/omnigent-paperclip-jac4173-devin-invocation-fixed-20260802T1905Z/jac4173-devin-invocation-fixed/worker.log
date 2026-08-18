@@ -1,0 +1,19 @@
+
+[ringer.py] attempt 1 started 2026-08-02T18:50:56.124654+00:00
+[ringer.py] engine: devin
+[ringer.py] launch receipt: lr-01KZ1X16QWVYC69QAPX4BJWCD7
+[ringer.py] command: /Users/hermes/.local/bin/devin --print --permission-mode dangerous --respect-workspace-trust false -- 'Execute the assigned Paperclip queue workload JAC-4173, titled '"'"'Coordinator Fleet Coordination Check'"'"', as a bounded read-only verification. You are running under Ringer as the registered Devin execution lane; Paperclip remains the authority. First inspect /Users/hermes/Vault/coordination/omnigent-dispatch/fleet/lane-registry.yaml and record the Devin lane contract, allowed scope, return-control rules, executable, and registered invocation metadata. Then inspect the live local Paperclip API at http://localhost:3101 for the company 87c32b8e-f131-4df8-ad8e-963d01b458e7: read the agent table and the nonterminal issue counts needed to report queue, active runs, and blockers. If the API is unavailable, record the exact HTTP or connection failure and use only local evidence; do not invent live results. Produce only report.md in the current task directory. The report must include these headings exactly: Result, Queue Snapshot, Active Runs, Lane Eligibility, Selected Work, Governance, Evidence, Risks, Next Adjustment. State that JAC-4173 was selected because it is a small, independent, read-only coordination check and that this run is the execution of that queued item. Include an ISO-8601 UTC timestamp, concrete endpoint/path evidence, and a PASS/DEGRADED/BLOCKED result. Record the exact registered invocation and confirm that the invocation used by this run matches it. Do not modify source files, lane registry, Paperclip issues, statuses, assignments, agents, credentials, services, or external systems; do not send messages; do not create or close work. Return control to Ringer on failure, ambiguity, or out-of-scope findings.' < /dev/null
+Done. I executed JAC-4173 as a bounded, read-only coordination check and produced `report.md` in the task directory:
+
+`/Users/hermes/Vault/coordination/omnigent-dispatch/runtime/work/omnigent-paperclip-jac4173-devin-invocation-fixed-20260802T1905Z/jac4173-devin-invocation-fixed/report.md`
+
+Key findings:
+
+- Queue: **122 nonterminal issues** (33 todo, 4 in progress, 8 in review, 77 blocked).
+- Active runs: **4 in-progress issues**; only **JAC-4000** has a live `activeRun` (`1e378314-...`) running under agent `80284e06-...`.
+- JAC-4173 is currently `todo`, unassigned, with no `activeRun`.
+- No agent named "Devin" exists in the Paperclip agent table, despite the `devin` lane being registered in `lane-registry.yaml`.
+- The run's actual `devin` invocation matches the registered invocation in `lane-registry.yaml`.
+
+Result: **DEGRADED**, due to the ambiguity between JAC-4173 (queued but not active) and the already-running JAC-4000, plus the missing Devin agent identity. I returned control to Ringer in the report's `Next Adjustment` section and did not modify any source files, issues, agents, or external systems.
+[ringer.py] attempt 1 exited rc=0

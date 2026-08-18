@@ -1,0 +1,64 @@
+{
+  "run_name": "omnigent-paperclip-lane-probe-20260802T1822Z",
+  "workdir": "/Users/hermes/Vault/coordination/omnigent-dispatch/runtime/work/omnigent-paperclip-lane-probe-20260802T1822Z",
+  "risk": "low",
+  "orchestrator": {
+    "provider": "local",
+    "model": "devin",
+    "family": "registered-lane",
+    "runtime": "ringer",
+    "profile": "planner",
+    "harness": "devin",
+    "orchestrator": "single",
+    "attestation": "Read-only registered Devin lane probe through the Paperclip-authorized Ringer execution spine"
+  },
+  "max_parallel": 1,
+  "worktrees": false,
+  "tasks": [
+    {
+      "key": "devin-lane-probe",
+      "engine": "devin",
+      "task_type": "lane-contract-smoke",
+      "spec": "Perform a read-only lane-contract smoke test for the Paperclip/Omnigent fleet. Inspect /Users/hermes/Vault/coordination/omnigent-dispatch/fleet/lane-registry.yaml and verify the registered devin and cursor lanes, their contract/adapter/policy versions, capabilities, executable/config/state paths, invocation metadata, and governance fields. Do not modify the repository, call Paperclip APIs, assign or update issues, create agents, restart services, expose secrets, or access the network. Write only report.md in the current task directory. The report must have these headings: Result, Devin Lane, Cursor Lane, Governance, Risks, Next Adjustment. State whether the lane metadata is internally consistent and include concrete evidence from the registry.",
+      "check": "python3 -c 'from pathlib import Path; p=Path(\"report.md\"); text=p.read_text() if p.is_file() else \"\"; required=[\"Result\", \"Devin Lane\", \"Cursor Lane\", \"Governance\", \"Risks\", \"Next Adjustment\"]; missing=[h for h in required if h not in text]; raise SystemExit(0 if p.is_file() and p.stat().st_size > 400 and not missing else (print(\"FAIL: report.md missing or incomplete headings: \" + \", \".join(missing)), 1)[1])'",
+      "expect_files": [
+        "report.md"
+      ],
+      "timeout_s": 600,
+      "full_access": false,
+      "verified": "Devin produced a non-empty read-only lane-contract report with all required governance sections.",
+      "governance": {
+        "authority": "paperclip",
+        "execution_spine": "ringer",
+        "direct_omnigent_bypass": false
+      },
+      "lane": "devin",
+      "lane_contract_version": "1.0.0",
+      "adapter_version": "1.0.0",
+      "policy_version": "1.0.0",
+      "capability_mapping": {
+        "contract_version": "1.0.0",
+        "capabilities": [
+          "orchestration",
+          "environment_setup",
+          "cross_service_coordination"
+        ]
+      },
+      "paths": {
+        "executable": "devin",
+        "config": "~/.config/devin/config.json",
+        "state": "~/.config/devin"
+      },
+      "invocation": {
+        "args": [
+          "--print",
+          "--permission-mode",
+          "accept-edits",
+          "--respect-workspace-trust",
+          "false",
+          "--"
+        ]
+      }
+    }
+  ]
+}

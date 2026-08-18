@@ -1,0 +1,49 @@
+{
+  "schema": "fleet-service-update/v1",
+  "event_id": "9490f1a0867c0f76bf8c",
+  "event": "completion",
+  "durable_ref": "validate-heavy-worker-routing-without-launching-",
+  "occurred_at": "2026-08-05T21:17:08.996740+00:00",
+  "route": {
+    "route": "ringer-omnigent",
+    "profile": "planner",
+    "reason": "heavy worker requested"
+  },
+  "evidence": {
+    "manifest": "/Users/hermes/Vault/coordination/omnigent-dispatch/runtime/manifests/omnigent-paperclip-planner-20260805T211708Z.ringer.json",
+    "receipt": "/Users/hermes/Vault/coordination/omnigent-dispatch/runtime/receipts/omnigent-paperclip-planner-20260805T211708Z.json",
+    "artifacts": []
+  },
+  "deliveries": {
+    "holographic": {
+      "status": "queued",
+      "attempts": 0
+    },
+    "honcho": {
+      "status": "queued",
+      "attempts": 0
+    },
+    "hindsight": {
+      "status": "queued",
+      "attempts": 0
+    },
+    "openbrain1": {
+      "status": "queued",
+      "attempts": 0
+    },
+    "gbrain": {
+      "status": "queued",
+      "attempts": 0
+    },
+    "vaults": {
+      "status": "queued",
+      "attempts": 0
+    }
+  },
+  "retry": {
+    "policy": "exponential",
+    "base_seconds": 30,
+    "max_seconds": 3600,
+    "never_drop": true
+  }
+}

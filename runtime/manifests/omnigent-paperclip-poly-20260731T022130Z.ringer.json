@@ -1,0 +1,47 @@
+{
+  "run_name": "omnigent-paperclip-poly-20260731T022130Z",
+  "workdir": "/Users/hermes/Vault/coordination/omnigent-dispatch/runtime/work/omnigent-paperclip-poly-20260731T022130Z",
+  "risk": "medium",
+  "orchestrator": {
+    "provider": "local",
+    "model": "omnigent",
+    "family": "meta-harness",
+    "runtime": "omnigent-ringer",
+    "profile": "poly",
+    "harness": "hermes",
+    "orchestrator": "poly",
+    "attestation": "Bounded local dispatch through the existing Ringer execution spine"
+  },
+  "max_parallel": 2,
+  "worktrees": false,
+  "tasks": [
+    {
+      "key": "dispatch-1-mock",
+      "engine": "mock",
+      "task_type": "omnigent-fleet-dispatch",
+      "spec": "MOCK_FILE: report.md\n{\n  \"status\": \"PASS\",\n  \"source\": \"omnigent\",\n  \"route\": \"ringer\",\n  \"worker\": 1,\n  \"prompt\": \"Compare independent implementation approaches\"\n}\nMOCK_END",
+      "check": "python3 -c 'from pathlib import Path; p=Path(\"report.md\"); raise SystemExit(0 if p.is_file() and p.stat().st_size else 1)'",
+      "expect_files": [
+        "report.md"
+      ],
+      "timeout_s": 1800,
+      "full_access": false,
+      "verified": "Worker produced a non-empty tracked completion report.",
+      "bead_id": "JAC-ROUTER-SMOKE"
+    },
+    {
+      "key": "dispatch-2-mock",
+      "engine": "mock",
+      "task_type": "omnigent-fleet-dispatch",
+      "spec": "MOCK_FILE: report.md\n{\n  \"status\": \"PASS\",\n  \"source\": \"omnigent\",\n  \"route\": \"ringer\",\n  \"worker\": 2,\n  \"prompt\": \"Compare independent implementation approaches\"\n}\nMOCK_END",
+      "check": "python3 -c 'from pathlib import Path; p=Path(\"report.md\"); raise SystemExit(0 if p.is_file() and p.stat().st_size else 1)'",
+      "expect_files": [
+        "report.md"
+      ],
+      "timeout_s": 1800,
+      "full_access": false,
+      "verified": "Worker produced a non-empty tracked completion report.",
+      "bead_id": "JAC-ROUTER-SMOKE"
+    }
+  ]
+}

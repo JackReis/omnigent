@@ -1,0 +1,14 @@
+{
+  "ok": true,
+  "dry_run": true,
+  "run_name": "omnigent-paperclip-planner-20260805T213259Z",
+  "manifest_path": "/Users/hermes/Vault/coordination/omnigent-dispatch/runtime/manifests/omnigent-paperclip-planner-20260805T213259Z.ringer.json",
+  "workdir": "/Users/hermes/Vault/coordination/omnigent-dispatch/runtime/work/omnigent-paperclip-planner-20260805T213259Z",
+  "engines": [
+    "kimi"
+  ],
+  "returncode": 0,
+  "stdout": "DRY RUN: no codex workers will be spawned.\nRun: omnigent-paperclip-planner-20260805T213259Z\nIdentity: omnigent\nConfig: /Users/hermes/.config/ringer/config.toml\nWorkdir: /Users/hermes/Vault/coordination/omnigent-dispatch/runtime/work/omnigent-paperclip-planner-20260805T213259Z\nMax parallel: 1\nWorktrees: False repo=None\nState dir: /Users/hermes/.ringer\nEval backend: jsonl\nDashboard: off\nArtifacts: on\n  live status page: /Users/hermes/.ringer/artifacts/omnigent-paperclip-planner-20260805T213259Z-20260805T213259Z-p15361.html\n  final report:     /Users/hermes/.ringer/artifacts/omnigent-paperclip-planner-20260805T213259Z-20260805T213259Z-p15361-report.html\n  runs index:       /Users/hermes/.ringer/artifacts/index.html\nTasks:\n  - dispatch-1-kimi\n    engine: kimi\n    dir: /Users/hermes/Vault/coordination/omnigent-dispatch/runtime/work/omnigent-paperclip-planner-20260805T213259Z/dispatch-1-kimi\n    timeout_s: 1800\n    full_access: false\n    expect_files: ['report.md']\n    check: python3 -c 'from pathlib import Path; p=Path(\"report.md\"); raise SystemExit(0 if p.is_file() and p.stat().st_size else 1)'\n    command: /Users/hermes/.kimi-code/bin/kimi --model deepseek-v4-flash --output-format stream-json --skills-dir /Users/hermes/.config/ringer/empty-skills --prompt 'Design the high-capability continuous orchestration rollout\n\nWrite a concise completion report to report.md in the current task directory.' < /dev/null\n",
+  "stderr": "",
+  "receipt_path": "/Users/hermes/Vault/coordination/omnigent-dispatch/runtime/receipts/omnigent-paperclip-planner-20260805T213259Z.json"
+}

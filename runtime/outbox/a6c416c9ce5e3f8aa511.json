@@ -1,0 +1,49 @@
+{
+  "schema": "fleet-service-update/v1",
+  "event_id": "a6c416c9ce5e3f8aa511",
+  "event": "policy_decision",
+  "durable_ref": "JAC-3671",
+  "occurred_at": "2026-07-31T02:44:07.199639+00:00",
+  "route": {
+    "route": "paperclip-native",
+    "profile": null,
+    "reason": "normal workflow task"
+  },
+  "evidence": {
+    "manifest": null,
+    "receipt": null,
+    "artifacts": []
+  },
+  "deliveries": {
+    "holographic": {
+      "status": "queued",
+      "attempts": 0
+    },
+    "honcho": {
+      "status": "queued",
+      "attempts": 0
+    },
+    "hindsight": {
+      "status": "queued",
+      "attempts": 0
+    },
+    "openbrain1": {
+      "status": "queued",
+      "attempts": 0
+    },
+    "gbrain": {
+      "status": "queued",
+      "attempts": 0
+    },
+    "vaults": {
+      "status": "queued",
+      "attempts": 0
+    }
+  },
+  "retry": {
+    "policy": "exponential",
+    "base_seconds": 30,
+    "max_seconds": 3600,
+    "never_drop": true
+  }
+}

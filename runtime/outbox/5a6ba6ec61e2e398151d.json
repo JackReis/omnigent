@@ -1,0 +1,63 @@
+{
+  "schema": "fleet-service-update/v1",
+  "event_id": "5a6ba6ec61e2e398151d",
+  "event": "completion",
+  "durable_ref": "coordinate-a-deployment",
+  "occurred_at": "2026-08-01T03:23:58.353560+00:00",
+  "route": {
+    "route": "ringer-omnigent",
+    "profile": "planner",
+    "lane": "devin",
+    "versions": {
+      "lane_contract_version": "1.0.0",
+      "adapter_version": "1.0.0",
+      "policy_version": "1.0.0"
+    },
+    "capability_mapping": {
+      "contract_version": "1.0.0",
+      "capabilities": [
+        "orchestration",
+        "environment_setup",
+        "cross_service_coordination"
+      ]
+    },
+    "reason": "registered lane requires Paperclip and Ringer governance"
+  },
+  "evidence": {
+    "manifest": "manifest.json",
+    "receipt": "receipt.json",
+    "artifacts": []
+  },
+  "deliveries": {
+    "holographic": {
+      "status": "queued",
+      "attempts": 0
+    },
+    "honcho": {
+      "status": "queued",
+      "attempts": 0
+    },
+    "hindsight": {
+      "status": "queued",
+      "attempts": 0
+    },
+    "openbrain1": {
+      "status": "queued",
+      "attempts": 0
+    },
+    "gbrain": {
+      "status": "queued",
+      "attempts": 0
+    },
+    "vaults": {
+      "status": "queued",
+      "attempts": 0
+    }
+  },
+  "retry": {
+    "policy": "exponential",
+    "base_seconds": 30,
+    "max_seconds": 3600,
+    "never_drop": true
+  }
+}

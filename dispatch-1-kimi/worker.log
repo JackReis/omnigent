@@ -1,0 +1,286 @@
+
+[ringer.py] attempt 1 started 2026-08-04T14:24:12.923947+00:00
+[ringer.py] engine: kimi
+[ringer.py] launch receipt: lr-01KZ6JJ8G6YB44VETTPZQ7AHCV
+[ringer.py] command: /Users/hermes/.kimi-code/bin/kimi --model kimi-for-coding/k2p7 --output-format stream-json --skills-dir /Users/hermes/.config/ringer/empty-skills --prompt 'Implement the minimum deny-by-default claim gate identified in the ADR-0019 admission pass for Bifrost hub hardening. The claim gate must check canonical Beads claim evidence and caller identity, reject replay/stale/malformed/unavailable cases, and produce auditable evidence. Do not enable Ringside write operations merely by completing implementation; enablement requires the separately recorded proof verdict.
+
+Acceptance criteria:
+1. Fixtures prove allowed claim, absent claim, wrong claimant, replay/stale claim, malformed authority envelope, and unavailable Beads behavior
+2. All failures deny writes
+3. Successful proof emits stable evidence tied to a Beads identifier and claimant identity
+4. Ringside remains read-only unless the proof passes and an explicit approval is recorded
+5. Artifact, verification, commit, push, revocation/rollback are recorded
+
+Bead: hermes-9ill.4
+Parent epic: hermes-9ill [epic] Bifrost hub hardening — Ringer-gated execution
+
+You are fleet worker 1 of 2. Produce an independent result and do not coordinate through untracked channels.
+
+Write a concise completion report to report.md in the current task directory.' < /dev/null
+{"role":"assistant","tool_calls":[{"type":"function","id":"tool_7bNhz2Y9PXNBlVupCkEjznzz","function":{"name":"Read","arguments":"{\"path\":\"worker.log\"}"}},{"type":"function","id":"tool_II5rfWsjLxqg3i7HMp9Soerf","function":{"name":"Bash","arguments":"{\"command\":\"ls -la && pwd && find . -maxdepth 3 -type f -not -path './.git/*' | head -50\"}"}}]}
+{"role":"tool","tool_call_id":"tool_7bNhz2Y9PXNBlVupCkEjznzz","content":"1\t\n2\t[ringer.py] attempt 1 started 2026-08-04T14:24:12.923947+00:00\n3\t[ringer.py] engine: kimi\n4\t[ringer.py] launch receipt: lr-01KZ6JJ8G6YB44VETTPZQ7AHCV\n5\t[ringer.py] command: /Users/hermes/.kimi-code/bin/kimi --model kimi-for-coding/k2p7 --output-format stream-json --skills-dir /Users/hermes/.config/ringer/empty-skills --prompt 'Implement the minimum deny-by-default claim gate identified in the ADR-0019 admission pass for Bifrost hub hardening. The claim gate must check canonical Beads claim evidence and caller identity, reject replay/stale/malformed/unavailable cases, and produce auditable evidence. Do not enable Ringside write operations merely by completing implementation; enablement requires the separately recorded proof verdict.\n6\t\n7\tAcceptance criteria:\n8\t1. Fixtures prove allowed claim, absent claim, wrong claimant, replay/stale claim, malformed authority envelope, and unavailable Beads behavior\n9\t2. All failures deny writes\n10\t3. Successful proof emits stable evidence tied to a Beads identifier and claimant identity\n11\t4. Ringside remains read-only unless the proof passes and an explicit approval is recorded\n12\t5. Artifact, verification, commit, push, revocation/rollback are recorded\n13\t\n14\tBead: hermes-9ill.4\n15\tParent epic: hermes-9ill [epic] Bifrost hub hardening — Ringer-gated execution\n16\t\n17\tYou are fleet worker 1 of 2. Produce an independent result and do not coordinate through untracked channels.\n18\t\n19\tWrite a concise completion report to report.md in the current task directory.' < /dev/null"}
+total 8
+drwxr-xr-x@  3 hermes  staff    96 Aug  4 09:24 .
+drwxr-xr-x@ 55 hermes  staff  1760 Aug  4 09:24 ..
+-rw-r--r--@  1 hermes  staff  1491 Aug  4 09:24 worker.log
+/Users/hermes/Vault/coordination/omnigent-dispatch/dispatch-1-kimi
+./worker.log
+{"role":"tool","tool_call_id":"tool_II5rfWsjLxqg3i7HMp9Soerf","content":"total 8\ndrwxr-xr-x@  3 hermes  staff    96 Aug  4 09:24 .\ndrwxr-xr-x@ 55 hermes  staff  1760 Aug  4 09:24 ..\n-rw-r--r--@  1 hermes  staff  1491 Aug  4 09:24 worker.log\n/Users/hermes/Vault/coordination/omnigent-dispatch/dispatch-1-kimi\n./worker.log\n"}
+total 3272
+drwxr-xr-x@  55 hermes  staff    1760 Aug  4 09:24 .
+drwxr-xr-x@  95 hermes  staff    3040 Aug  2 17:32 ..
+-rw-r--r--@   1 hermes  staff   10244 Aug  3 11:14 .DS_Store
+drwxr-xr-x@   3 hermes  staff      96 Jul 24 18:32 .claude
+-rw-r--r--@   1 hermes  staff   53248 Jul 24 18:32 .coverage
+drwxr-xr-x@  13 hermes  staff     416 Aug  4 08:59 .git
+-rw-r--r--@   1 hermes  staff     520 Jul 24 18:32 .gitattributes
+drwxr-xr-x@  16 hermes  staff     512 Jul 24 18:32 .github
+-rw-r--r--@   1 hermes  staff    2517 Jul 24 18:32 .gitignore
+drwxr-xr-x@   3 hermes  staff      96 Jul 24 18:35 .omnigent
+-rw-r--r--@   1 hermes  staff    7015 Jul 24 18:32 .pre-commit-config.yaml
+drwxr-xr-x@   6 hermes  staff     192 Jul 24 18:36 .pytest_cache
+-rw-r--r--@   1 hermes  staff       5 Jul 24 18:32 .python-version
+drwxr-xr-x@   5 hermes  staff     160 Aug  1 19:32 .ruff_cache
+drwxr-xr-x@   9 hermes  staff     288 Jul 30 21:21 .venv
+-rw-r--r--@   1 hermes  staff    3270 Jul 24 18:32 AGENTS.md
+-rw-r--r--@   1 hermes  staff   13945 Jul 24 18:32 CHANGELOG.md
+lrwxr-xr-x@   1 hermes  staff       9 Jul 24 18:32 CLAUDE.md -> AGENTS.md
+-rw-r--r--@   1 hermes  staff    8631 Jul 24 18:32 CONTRIBUTING.md
+-rw-r--r--@   1 hermes  staff    1366 Jul 24 18:32 DCO
+-rw-r--r--@   1 hermes  staff   10173 Jul 24 18:32 LICENSE
+-rw-r--r--@   1 hermes  staff    5318 Jul 24 18:32 NOTICE
+-rw-r--r--@   1 hermes  staff   20916 Jul 24 18:32 README.md
+-rw-r--r--@   1 hermes  staff   15103 Jul 24 18:32 RELEASING.md
+-rw-r--r--@   1 hermes  staff    3861 Jul 24 18:32 SECURITY.md
+drwxr-xr-x@   5 hermes  staff     160 Aug  1 19:33 audit
+-rw-r--r--@   1 hermes  staff      57 Jul 24 18:32 config.yaml
+drwxr-xr-x@  19 hermes  staff     608 Jul 25 10:23 deploy
+drwxr-xr-x@  20 hermes  staff     640 Jul 25 10:23 designs
+drwxr-xr-x@   7 hermes  staff     224 Jul 25 10:23 dev
+drwxr-xr-x@   3 hermes  staff      96 Aug  4 09:24 dispatch-1-kimi
+drwxr-xr-x@   4 hermes  staff     128 Aug  4 09:24 dispatch-2-mock
+drwxr-xr-x@  23 hermes  staff     736 Jul 25 10:23 docs
+drwxr-xr-x@   3 hermes  staff      96 Jul 25 10:23 editors
+drwxr-xr-x@   9 hermes  staff     288 Jul 25 10:23 examples
+drwxr-xr-x@   9 hermes  staff     288 Jul 25 10:23 fleet
+drwxr-xr-x@   3 hermes  staff      96 Jul 25 10:23 integrations
+drwxr-xr-x@ 146 hermes  staff    4672 Jul 25 10:23 omnigent
+drwxr-xr-x@   3 hermes  staff      96 Aug  1 15:10 omnigent-dispatch
+drwxr-xr-x@   8 hermes  staff     256 Jul 25 10:23 omnigent.egg-info
+-rw-r--r--@   1 hermes  staff  462333 Jul 24 18:32 openapi.json
+-rw-r--r--@   1 hermes  staff    5125 Aug  1 18:08 poly-orchestrator-launch-report.md
+-rw-r--r--@   1 hermes  staff   37768 Jul 24 18:32 pyproject.toml
+-rw-r--r--@   1 hermes  staff     186 Jul 24 18:32 pyrefly.toml
+-rw-r--r--@   1 hermes  staff     495 Jul 24 18:32 railway.toml
+-rw-r--r--@   1 hermes  staff    2017 Jul 24 18:32 render.yaml
+drwxr-xr-x@   6 hermes  staff     192 Aug  3 14:54 reports
+drwxr-xr-x@  19 hermes  staff     608 Jul 25 10:23 runtime
+drwxr-xr-x@  19 hermes  staff     608 Jul 25 10:23 scripts
+drwxr-xr-x@   5 hermes  staff     160 Jul 25 10:23 sdks
+-rw-r--r--@   1 hermes  staff   10311 Jul 24 18:32 setup.py
+drwxr-xr-x@ 153 hermes  staff    4896 Jul 25 10:23 tests
+-rw-r--r--@   1 hermes  staff  938325 Jul 24 18:32 uv.lock
+-rw-r--r--@   1 hermes  staff    1743 Jul 24 18:32 uv.toml
+drwxr-xr-x@  28 hermes  staff     896 Jul 25 10:23 web
+./.DS_Store
+./.claude/skills/antigravity-native-e2e-dev/SKILL.md
+./.claude/skills/antigravity-sdk-e2e-dev/SKILL.md
+./.claude/skills/cli-setup-verify/SKILL.md
+./.claude/skills/cli-setup-verify/verify_cli.py
+./.claude/skills/copilot-sdk-e2e-dev/SKILL.md
+./.claude/skills/cursor-sdk-e2e-dev/SKILL.md
+./.claude/skills/harness-integration-guide/SKILL.md
+./.claude/skills/pi-native-e2e-dev/SKILL.md
+./.claude/skills/polly-e2e-dev/SKILL.md
+./.claude/skills/polly-e2e-dev/polly_cuj.py
+./.coverage
+./.gitattributes
+./.github/ISSUE_TEMPLATE/bug_report.yml
+./.github/ISSUE_TEMPLATE/config.yml
+./.github/ISSUE_TEMPLATE/feature_request.yml
+./.github/MAINTAINER
+./.github/actions/e2e-run/action.yml
+./.github/actions/integration-run/action.yml
+./.github/actions/run-omnigent-agent/action.yml
+./.github/actions/setup-node/action.yml
+./.github/agents/doc-classifier/config.yaml
+./.github/agents/doc-drafter/config.yaml
+./.github/agents/feature-blog-drafter/config.yaml
+./.github/agents/feature-blog-scout/config.yaml
+./.github/agents/release-notes-drafter/config.yaml
+./.github/agents/release-post-formatter/config.yaml
+./.github/areas.json
+./.github/ci-deps/package.json
+./.github/copilot-instructions.md
+./.github/dependabot.yml
+./.github/pull_request_template.md
+./.github/scripts/changelog/generate.py
+./.github/scripts/changelog/release_to_mdx.py
+./.github/scripts/ci/backcompat-pairwise-matrix.sh
+./.github/scripts/ci/e2e-shard-matrix.sh
+./.github/scripts/ci/integration-matrix.sh
+./.github/scripts/e2e-ui-required/check.sh
+./.github/scripts/homebrew/generate_formula.py
+./.github/scripts/homebrew/omnigent.rb.template
+./.github/scripts/merge-ready/authorize-merge-comment.sh
+./.github/scripts/merge-ready/compute-gate.sh
+./.github/scripts/merge-ready/enable-automerge-comment.sh
+./.github/scripts/merge-ready/enable-automerge-label.sh
+./.github/scripts/merge-ready/evaluate-checks.sh
+./.github/scripts/merge-ready/load-maintainers.sh
+./.github/scripts/merge-ready/required.sh
+./.github/scripts/oss-publish-images/maxver.py
+./.github/scripts/oss-publish-images/reconcile_targets.py
+./.github/scripts/pr-size/compute_label.py
+./.github/scripts/pr-template/_md.py
+./.github/scripts/pr-template/format_body.py
+./.github/scripts/pr-template/validate.py
+./.github/scripts/rotation.py
+./.github/scripts/rotation_maintain.py
+./.github/scripts/rotation_roster.json
+./.github/scripts/rotation_schedule.json
+./.github/scripts/security-scan/exfil-scan.py
+./.github/scripts/security-scan/lint-workflow-misuse.py
+./.github/scripts/security-scan/secret-scan.py
+./.github/scripts/security-scan/sensitive-paths.sh
+./.github/scripts/security-scan/should-scan.sh
+./.github/scripts/waiting_on_author.py
+./.github/scripts/waiting_on_author_test.py
+./.github/security/TRIAGE.md
+./.github/security/semgrep-rules.yml
+./.github/triage/config.yaml
+./.github/triage/security/config.yaml
+./.github/ui-preview/README.md
+./.github/ui-preview/app.py
+./.github/ui-preview/app.yaml
+./.github/workflows/android-bundle.yml
+./.github/workflows/areas.test.js
+./.github/workflows/auto-assign-reviewer-test.yml
+./.github/workflows/auto-assign-reviewer.fixture.json
+./.github/workflows/auto-assign-reviewer.js
+./.github/workflows/auto-assign-reviewer.test.js
+./.github/workflows/auto-assign-reviewer.yml
+./.github/workflows/autoformat-pr.yml
+./.github/workflows/benchmark-pr.yml
+./.github/workflows/benchmark.yml
+./.github/workflows/bump-version.yml
+./.github/workflows/ci.yml
+./.github/workflows/code-coverage.yml
+./.github/workflows/demo-check.js
+./.github/workflows/demo-check.yml
+./.github/workflows/discord-watch-rotation-maintain.yml
+./.github/workflows/discord-watch-rotation.yml
+./.github/workflows/doc-sync.yml
+./.github/workflows/docker-build.yml
+./.github/workflows/draft-release-notes.yml
+./.github/workflows/duplicate-prs-test.yml
+./.github/workflows/duplicate-prs.js
+./.github/workflows/duplicate-prs.test.js
+./.github/workflows/duplicate-prs.yml
+./.github/workflows/e2e-ui-required.yml
+./.github/workflows/e2e-ui.yml
+./.github/workflows/e2e.yml
+./.github/workflows/electron-build.yml
+./.github/workflows/feature-blog.yml
+./.github/workflows/finalize-release.yml
+./.github/workflows/flake-stress-e2e.yml
+./.github/workflows/flake-stress-ui.yml
+./.github/workflows/flake-stress.yml
+./.github/workflows/github-release.yml
+./.github/workflows/homebrew-tap-pr.yml
+./.github/workflows/integration.yml
+./.github/workflows/issue-triage.yml
+./.github/workflows/lint.yml
+./.github/workflows/maintainer-approval-rerun-run.yml
+./.github/workflows/maintainer-approval-rerun.yml
+./.github/workflows/maintainer-approval.yml
+./.github/workflows/merge-ready.yml
+./.github/workflows/nightly-failure-monitor.yml
+./.github/workflows/oss-publish-images.yml
+./.github/workflows/oss-regen-on-comment.yml
+./.github/workflows/oss-regenerate-and-smoke.yml
+./.github/workflows/oss-scorecard.yml
+./.github/workflows/polly-review-approval-dispatch.yml
+./.github/workflows/polly-review-on-approval.yml
+./.github/workflows/polly-review.yml
+./.github/workflows/pr-size.js
+./.github/workflows/pr-size.yml
+./.github/workflows/publish-changelog.yml
+./.github/workflows/release-omnigent.yml
+./.github/workflows/release.yml
+./.github/workflows/rerun-ci.yml
+./.github/workflows/rerun-security-gate-run.yml
+./.github/workflows/rerun-security-gate.yml
+./.github/workflows/review-sla-test.yml
+./.github/workflows/review-sla.js
+./.github/workflows/review-sla.test.js
+./.github/workflows/review-sla.yml
+./.github/workflows/security-gate.yml
+./.github/workflows/security-scan.yml
+./.github/workflows/security-triage.yml
+./.github/workflows/server-compat.yml
+./.github/workflows/stale.yml
+./.github/workflows/sync-openapi-to-site.yml
+./.github/workflows/ui-preview.yml
+./.github/workflows/ui-snapshot-fail-comment.yml
+./.github/workflows/ui-snapshot-update.yml
+./.github/workflows/ui-snapshot.yml
+./.github/workflows/update-homebrew.yml
+./.github/workflows/vscode-extension-release.yml
+./.github/workflows/vscode-release-pr.yml
+./.github/workflows/waiting-on-author-test.yml
+./.github/workflows/waiting-on-author.yml
+./.github/workflows/web-tests.yml
+./.github/workflows/windows.yml
+./.gitignore
+./.omnigent/config.yaml
+./.pre-commit-config.yaml
+./.pytest_cache/.gitignore
+./.pytest_cache/CACHEDIR.TAG
+./.pytest_cache/README.md
+./.pytest_cache/v/cache/lastfailed
+./.pytest_cache/v/cache/nodeids
+./.python-version
+./.ruff_cache/.gitignore
+./.ruff_cache/0.15.16/15041609523012965518
+./.ruff_cache/0.15.16/17548313431116870167
+./.ruff_cache/0.15.16/17829987761781362602
+./.ruff_cache/0.15.16/3678955474637335574
+./.ruff_cache/0.15.16/3976132417138457506
+./.ruff_cache/0.15.16/5883379893859438067
+./.ruff_cache/0.15.16/9909548351039056383
+./.ruff_cache/CACHEDIR.TAG
+./.venv/.gitignore
+./.venv/.lock
+./.venv/CACHEDIR.TAG
+./.venv/bin/activate
+./.venv/bin/activate.bat
+./.venv/bin/activate.csh
+./.venv/bin/activate.fish
+./.venv/bin/activate.nu
+./.venv/bin/activate.ps1
+./.venv/bin/activate_this.py
+./.venv/bin/alembic
+./.venv/bin/cel-python
+./.venv/bin/coverage
+./.venv/bin/coverage-3.12
+./.venv/bin/coverage3
+./.venv/bin/deactivate.bat
+./.venv/bin/distro
+./.venv/bin/dmypy
+./.venv/bin/dotenv
+./.venv/bin/fastapi
+./.venv/bin/ftfy
+./.venv/bin/httpx
+./.venv/bin/identify-cli
+./.venv/bin/idna
+./.venv/bin/jp.py
+./.venv/bin/jsonschema
+./.venv/bin/keyring
+./.venv/bin/mako-render
+./.venv/bin/markdown-it
+./.venv/bin/mcp
+./.venv/bin/moto_proxy
+./.venv/bin/moto_server
+{"role":"assistant","tool_calls":[{"type":"function","id":"tool_e7H3KORXnCDvj381Y6voou35","function":{"name":"Bash","arguments":"{\"command\":\"cd /Users/hermes/Vault/coordination/omnigent-dispatch && ls -la && find . -maxdepth 4 -type f -not -path './.git/*' | sort | head -200\",\"timeout\":60}"}}]}
+{"role":"tool","tool_call_id":"tool_e7H3KORXnCDvj381Y6voou35","content":"total 3272\ndrwxr-xr-x@  55 hermes  staff    1760 Aug  4 09:24 .\ndrwxr-xr-x@  95 hermes  staff    3040 Aug  2 17:32 ..\n-rw-r--r--@   1 hermes  staff   10244 Aug  3 11:14 .DS_Store\ndrwxr-xr-x@   3 hermes  staff      96 Jul 24 18:32 .claude\n-rw-r--r--@   1 hermes  staff   53248 Jul 24 18:32 .coverage\ndrwxr-xr-x@  13 hermes  staff     416 Aug  4 08:59 .git\n-rw-r--r--@   1 hermes  staff     520 Jul 24 18:32 .gitattributes\ndrwxr-xr-x@  16 hermes  staff     512 Jul 24 18:32 .github\n-rw-r--r--@   1 hermes  staff    2517 Jul 24 18:32 .gitignore\ndrwxr-xr-x@   3 hermes  staff      96 Jul 24 18:35 .omnigent\n-rw-r--r--@   1 hermes  staff    7015 Jul 24 18:32 .pre-commit-config.yaml\ndrwxr-xr-x@   6 hermes  staff     192 Jul 24 18:36 .pytest_cache\n-rw-r--r--@   1 hermes  staff       5 Jul 24 18:32 .python-version\ndrwxr-xr-x@   5 hermes  staff     160 Aug  1 19:32 .ruff_cache\ndrwxr-xr-x@   9 hermes  staff     288 Jul 30 21:21 .venv\n-rw-r--r--@   1 hermes  staff    3270 Jul 24 18:32 AGENTS.md\n-rw-r--r--@   1 hermes  staff   13945 Jul 24 18:32 CHANGELOG.md\nlrwxr-xr-x@   1 hermes  staff       9 Jul 24 18:32 CLAUDE.md -> AGENTS.md\n-rw-r--r--@   1 hermes  staff    8631 Jul 24 18:32 CONTRIBUTING.md\n-rw-r--r--@   1 hermes  staff    1366 Jul 24 18:32 DCO\n-rw-r--r--@   1 hermes  staff   10173 Jul 24 18:32 LICENSE\n-rw-r--r--@   1 hermes  staff    5318 Jul 24 18:32 NOTICE\n-rw-r--r--@   1 hermes  staff   20916 Jul 24 18:32 README.md\n-rw-r--r--@   1 hermes  staff   15103 Jul 24 18:32 RELEASING.md\n-rw-r--r--@   1 hermes  staff    3861 Jul 24 18:32 SECURITY.md\ndrwxr-xr-x@   5 hermes  staff     160 Aug  1 19:33 audit\n-rw-r--r--@   1 hermes  staff      57 Jul 24 18:32 config.yaml\ndrwxr-xr-x@  19 hermes  staff     608 Jul 25 10:23 deploy\ndrwxr-xr-x@  20 hermes  staff     640 Jul 25 10:23 designs\ndrwxr-xr-x@   7 hermes  staff     224 Jul 25 10:23 dev\ndrwxr-xr-x@   3 hermes  staff      96 Aug  4 09:24 dispatch-1-kimi\ndrwxr-xr-x@   4 hermes  staff     128 Aug  4 09:24 dispatch-2-mock\ndrwxr-xr-x@  23 hermes  staff     736 Jul 25 10:23 docs\ndrwxr-xr-x@   3 hermes  staff      96 Jul 25 10:23 editors\ndrwxr-xr-x@   9 hermes  staff     288 Jul 25 10:23 examples\ndrwxr-xr-x@   9 hermes  staff     288 Jul 25 10:23 fleet\ndrwxr-xr-x@   3 hermes  staff      96 Jul 25 10:23 integrations\ndrwxr-xr-x@ 146 hermes  staff    4672 Jul 25 10:23 omnigent\ndrwxr-xr-x@   3 hermes  staff      96 Aug  1 15:10 omnigent-dispatch\ndrwxr-xr-x@   8 hermes  staff     256 Jul 25 10:23 omnigent.egg-info\n-rw-r--r--@   1 hermes  staff  462333 Jul 24 18:32 openapi.json\n-rw-r--r--@   1 hermes  staff    5125 Aug  1 18:08 poly-orchestrator-launch-report.md\n-rw-r--r--@   1 hermes  staff   37768 Jul 24 18:32 pyproject.toml\n-rw-r--r--@   1 hermes  staff     186 Jul 24 18:32 pyrefly.toml\n-rw-r--r--@   1 hermes  staff     495 Jul 24 18:32 railway.toml\n-rw-r--r--@   1 hermes  staff    2017 Jul 24 18:32 render.yaml\ndrwxr-xr-x@   6 hermes  staff     192 Aug  3 14:54 reports\ndrwxr-xr-x@  19 hermes  staff     608 Jul 25 10:23 runtime\ndrwxr-xr-x@  19 hermes  staff     608 Jul 25 10:23 scripts\ndrwxr-xr-x@   5 hermes  staff     160 Jul 25 10:23 sdks\n-rw-r--r--@   1 hermes  staff   10311 Jul 24 18:32 setup.py\ndrwxr-xr-x@ 153 hermes  staff    4896 Jul 25 10:23 tests\n-rw-r--r--@   1 hermes  staff  938325 Jul 24 18:32 uv.lock\n-rw-r--r--@   1 hermes  staff    1743 Jul 24 18:32 uv.toml\ndrwxr-xr-x@  28 hermes  staff     896 Jul 25 10:23 web\n./.DS_Store\n./.claude/skills/antigravity-native-e2e-dev/SKILL.md\n./.claude/skills/antigravity-sdk-e2e-dev/SKILL.md\n./.claude/skills/cli-setup-verify/SKILL.md\n./.claude/skills/cli-setup-verify/verify_cli.py\n./.claude/skills/copilot-sdk-e2e-dev/SKILL.md\n./.claude/skills/cursor-sdk-e2e-dev/SKILL.md\n./.claude/skills/harness-integration-guide/SKILL.md\n./.claude/skills/pi-native-e2e-dev/SKILL.md\n./.claude/skills/polly-e2e-dev/SKILL.md\n./.claude/skills/polly-e2e-dev/polly_cuj.py\n./.coverage\n./.gitattributes\n./.github/ISSUE_TEMPLATE/bug_report.yml\n./.github/ISSUE_TEMPLATE/config.yml\n./.github/ISSUE_TEMPLATE/feature_request.yml\n./.github/MAINTAINER\n./.github/actions/e2e-run/action.yml\n./.github/actions/integration-run/action.yml\n./.github/actions/run-omnigent-agent/action.yml\n./.github/actions/setup-node/action.yml\n./.github/agents/doc-classifier/config.yaml\n./.github/agents/doc-drafter/config.yaml\n./.github/agents/feature-blog-drafter/config.yaml\n./.github/agents/feature-blog-scout/config.yaml\n./.github/agents/release-notes-drafter/config.yaml\n./.github/agents/release-post-formatter/config.yaml\n./.github/areas.json\n./.github/ci-deps/package.json\n./.github/copilot-instructions.md\n./.github/dependabot.yml\n./.github/pull_request_template.md\n./.github/scripts/changelog/generate.py\n./.github/scripts/changelog/release_to_mdx.py\n./.github/scripts/ci/backcompat-pairwise-matrix.sh\n./.github/scripts/ci/e2e-shard-matrix.sh\n./.github/scripts/ci/integration-matrix.sh\n./.github/scripts/e2e-ui-required/check.sh\n./.github/scripts/homebrew/generate_formula.py\n./.github/scripts/homebrew/omnigent.rb.template\n./.github/scripts/merge-ready/authorize-merge-comment.sh\n./.github/scripts/merge-ready/compute-gate.sh\n./.github/scripts/merge-ready/enable-automerge-comment.sh\n./.github/scripts/merge-ready/enable-automerge-label.sh\n./.github/scripts/merge-ready/evaluate-checks.sh\n./.github/scripts/merge-ready/load-maintainers.sh\n./.github/scripts/merge-ready/required.sh\n./.github/scripts/oss-publish-images/maxver.py\n./.github/scripts/oss-publish-images/reconcile_targets.py\n./.github/scripts/pr-size/compute_label.py\n./.github/scripts/pr-template/_md.py\n./.github/scripts/pr-template/format_body.py\n./.github/scripts/pr-template/validate.py\n./.github/scripts/rotation.py\n./.github/scripts/rotation_maintain.py\n./.github/scripts/rotation_roster.json\n./.github/scripts/rotation_schedule.json\n./.github/scripts/security-scan/exfil-scan.py\n./.github/scripts/security-scan/lint-workflow-misuse.py\n./.github/scripts/security-scan/secret-scan.py\n./.github/scripts/security-scan/sensitive-paths.sh\n./.github/scripts/security-scan/should-scan.sh\n./.github/scripts/waiting_on_author.py\n./.github/scripts/waiting_on_author_test.py\n./.github/security/TRIAGE.md\n./.github/security/semgrep-rules.yml\n./.github/triage/config.yaml\n./.github/triage/security/config.yaml\n./.github/ui-preview/README.md\n./.github/ui-preview/app.py\n./.github/ui-preview/app.yaml\n./.github/workflows/android-bundle.yml\n./.github/workflows/areas.test.js\n./.github/workflows/auto-assign-reviewer-test.yml\n./.github/workflows/auto-assign-reviewer.fixture.json\n./.github/workflows/auto-assign-reviewer.js\n./.github/workflows/auto-assign-reviewer.test.js\n./.github/workflows/auto-assign-reviewer.yml\n./.github/workflows/autoformat-pr.yml\n./.github/workflows/benchmark-pr.yml\n./.github/workflows/benchmark.yml\n./.github/workflows/bump-version.yml\n./.github/workflows/ci.yml\n./.github/workflows/code-coverage.yml\n./.github/workflows/demo-check.js\n./.github/workflows/demo-check.yml\n./.github/workflows/discord-watch-rotation-maintain.yml\n./.github/workflows/discord-watch-rotation.yml\n./.github/workflows/doc-sync.yml\n./.github/workflows/docker-build.yml\n./.github/workflows/draft-release-notes.yml\n./.github/workflows/duplicate-prs-test.yml\n./.github/workflows/duplicate-prs.js\n./.github/workflows/duplicate-prs.test.js\n./.github/workflows/duplicate-prs.yml\n./.github/workflows/e2e-ui-required.yml\n./.github/workflows/e2e-ui.yml\n./.github/workflows/e2e.yml\n./.github/workflows/electron-build.yml\n./.github/workflows/feature-blog.yml\n./.github/workflows/finalize-release.yml\n./.github/workflows/flake-stress-e2e.yml\n./.github/workflows/flake-stress-ui.yml\n./.github/workflows/flake-stress.yml\n./.github/workflows/github-release.yml\n./.github/workflows/homebrew-tap-pr.yml\n./.github/workflows/integration.yml\n./.github/workflows/issue-triage.yml\n./.github/workflows/lint.yml\n./.github/workflows/maintainer-approval-rerun-run.yml\n./.github/workflows/maintainer-approval-rerun.yml\n./.github/workflows/maintainer-approval.yml\n./.github/workflows/merge-ready.yml\n./.github/workflows/nightly-failure-monitor.yml\n./.github/workflows/oss-publish-images.yml\n./.github/workflows/oss-regen-on-comment.yml\n./.github/workflows/oss-regenerate-and-smoke.yml\n./.github/workflows/oss-scorecard.yml\n./.github/workflows/polly-review-approval-dispatch.yml\n./.github/workflows/polly-review-on-approval.yml\n./.github/workflows/polly-review.yml\n./.github/workflows/pr-size.js\n./.github/workflows/pr-size.yml\n./.github/workflows/publish-changelog.yml\n./.github/workflows/release-omnigent.yml\n./.github/workflows/release.yml\n./.github/workflows/rerun-ci.yml\n./.github/workflows/rerun-security-gate-run.yml\n./.github/workflows/rerun-security-gate.yml\n./.github/workflows/review-sla-test.yml\n./.github/workflows/review-sla.js\n./.github/workflows/review-sla.test.js\n./.github/workflows/review-sla.yml\n./.github/workflows/security-gate.yml\n./.github/workflows/security-scan.yml\n./.github/workflows/security-triage.yml\n./.github/workflows/server-compat.yml\n./.github/workflows/stale.yml\n./.github/workflows/sync-openapi-to-site.yml\n./.github/workflows/ui-preview.yml\n./.github/workflows/ui-snapshot-fail-comment.yml\n./.github/workflows/ui-snapshot-update.yml\n./.github/workflows/ui-snapshot.yml\n./.github/workflows/update-homebrew.yml\n./.github/workflows/vscode-extension-release.yml\n./.github/workflows/vscode-release-pr.yml\n./.github/workflows/waiting-on-author-test.yml\n./.github/workflows/waiting-on-author.yml\n./.github/workflows/web-tests.yml\n./.github/workflows/windows.yml\n./.gitignore\n./.omnigent/config.yaml\n./.pre-commit-config.yaml\n./.pytest_cache/.gitignore\n./.pytest_cache/CACHEDIR.TAG\n./.pytest_cache/README.md\n./.pytest_cache/v/cache/lastfailed\n./.pytest_cache/v/cache/nodeids\n./.python-version\n./.ruff_cache/.gitignore\n./.ruff_cache/0.15.16/15041609523012965518\n./.ruff_cache/0.15.16/17548313431116870167\n./.ruff_cache/0.15.16/17829987761781362602\n./.ruff_cache/0.15.16/3678955474637335574\n./.ruff_cache/0.15.16/3976132417138457506\n./.ruff_cache/0.15.16/5883379893859438067\n./.ruff_cache/0.15.16/9909548351039056383\n./.ruff_cache/CACHEDIR.TAG\n./.venv/.gitignore\n./.venv/.lock\n./.venv/CACHEDIR.TAG\n./.venv/bin/activate\n./.venv/bin/activate.bat\n./.venv/bin/activate.csh\n./.venv/bin/activate.fish\n./.venv/bin/activate.nu\n./.venv/bin/activate.ps1\n./.venv/bin/activate_this.py\n./.venv/bin/alembic\n./.venv/bin/cel-python\n./.venv/bin/coverage\n./.venv/bin/coverage-3.12\n./.venv/bin/coverage3\n./.venv/bin/deactivate.bat\n./.venv/bin/distro\n./.venv/bin/dmypy\n./.venv/bin/dotenv\n./.venv/bin/fastapi\n./.venv/bin/ftfy\n./.venv/bin/httpx\n./.venv/bin/identify-cli\n./.venv/bin/idna\n./.venv/bin/jp.py\n./.venv/bin/jsonschema\n./.venv/bin/keyring\n./.venv/bin/mako-render\n./.venv/bin/markdown-it\n./.venv/bin/mcp\n./.venv/bin/moto_proxy\n./.venv/bin/moto_server\n"}

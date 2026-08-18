@@ -1,0 +1,50 @@
+{
+  "schema": "fleet-service-update/v1",
+  "event_id": "11bf3a8e457d524e30f9",
+  "event": "completion",
+  "durable_ref": "JAC-LANE-SMOKE-EDITOR",
+  "occurred_at": "2026-08-01T02:40:27.000960+00:00",
+  "route": {
+    "route": "ringer-omnigent",
+    "profile": "coder",
+    "lane": "cursor",
+    "reason": "registered lane requires Paperclip and Ringer governance"
+  },
+  "evidence": {
+    "manifest": "/Users/hermes/Vault/coordination/omnigent-dispatch/runtime/manifests/omnigent-paperclip-coder-20260801T024026Z.ringer.json",
+    "receipt": "/Users/hermes/Vault/coordination/omnigent-dispatch/runtime/receipts/omnigent-paperclip-coder-20260801T024026Z.json",
+    "artifacts": []
+  },
+  "deliveries": {
+    "holographic": {
+      "status": "queued",
+      "attempts": 0
+    },
+    "honcho": {
+      "status": "queued",
+      "attempts": 0
+    },
+    "hindsight": {
+      "status": "queued",
+      "attempts": 0
+    },
+    "openbrain1": {
+      "status": "queued",
+      "attempts": 0
+    },
+    "gbrain": {
+      "status": "queued",
+      "attempts": 0
+    },
+    "vaults": {
+      "status": "queued",
+      "attempts": 0
+    }
+  },
+  "retry": {
+    "policy": "exponential",
+    "base_seconds": 30,
+    "max_seconds": 3600,
+    "never_drop": true
+  }
+}

@@ -1,0 +1,20 @@
+identity_default = "omnigent"
+state_dir = "/Users/hermes/Vault/coordination/omnigent-dispatch/runtime/ringer-state"
+
+[eval]
+backend = "jsonl"
+jsonl_path = "/Users/hermes/Vault/coordination/omnigent-dispatch/runtime/ringer-state/runs.jsonl"
+
+[engines.devin]
+bin = "/Users/hermes/.local/bin/devin"
+args_template = [
+  "--print",
+  "--permission-mode",
+  "dangerous",
+  "--respect-workspace-trust",
+  "false",
+  "--",
+  "{spec}",
+]
+full_access_args = []
+sandbox_args = []

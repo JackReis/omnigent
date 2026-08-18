@@ -1,0 +1,49 @@
+{
+  "schema": "fleet-service-update/v1",
+  "event_id": "3afbc8021006579927cf",
+  "event": "failure",
+  "durable_ref": "JAC-LANE-SMOKE",
+  "occurred_at": "2026-08-01T02:39:52.717910+00:00",
+  "route": {
+    "route": "paperclip-native",
+    "profile": null,
+    "reason": "fallback: no profile engines are currently allowed"
+  },
+  "evidence": {
+    "manifest": null,
+    "receipt": null,
+    "artifacts": []
+  },
+  "deliveries": {
+    "holographic": {
+      "status": "queued",
+      "attempts": 0
+    },
+    "honcho": {
+      "status": "queued",
+      "attempts": 0
+    },
+    "hindsight": {
+      "status": "queued",
+      "attempts": 0
+    },
+    "openbrain1": {
+      "status": "queued",
+      "attempts": 0
+    },
+    "gbrain": {
+      "status": "queued",
+      "attempts": 0
+    },
+    "vaults": {
+      "status": "queued",
+      "attempts": 0
+    }
+  },
+  "retry": {
+    "policy": "exponential",
+    "base_seconds": 30,
+    "max_seconds": 3600,
+    "never_drop": true
+  }
+}

@@ -1,0 +1,64 @@
+{
+  "run_name": "omnigent-paperclip-devin-lane-run-20260802T1828Z",
+  "workdir": "/Users/hermes/Vault/coordination/omnigent-dispatch/runtime/work/omnigent-paperclip-devin-lane-run-20260802T1828Z",
+  "risk": "low",
+  "orchestrator": {
+    "provider": "local",
+    "model": "devin",
+    "family": "registered-lane",
+    "runtime": "ringer",
+    "profile": "planner",
+    "harness": "devin",
+    "orchestrator": "single",
+    "attestation": "Ringer-owned bounded run through the Paperclip-authorized Devin lane"
+  },
+  "max_parallel": 1,
+  "worktrees": false,
+  "tasks": [
+    {
+      "key": "devin-lane-run",
+      "engine": "devin",
+      "task_type": "lane-contract-smoke-and-workload",
+      "spec": "Run a bounded, read-only Devin lane workload through Ringer. Execute these phases in order: (1) validate the local Devin and Cursor adapter commands, config/state paths, and the registered lane metadata in /Users/hermes/Vault/coordination/omnigent-dispatch/fleet/lane-registry.yaml; (2) perform a non-destructive smoke check that confirms this task is running under the registered Devin lane with Paperclip authority and Ringer as the execution spine; (3) execute the workload by producing a concise evidence report from the registry and local adapter metadata. Do not modify the repository, call Paperclip APIs, assign or update issues, create agents, restart services, expose secrets, or access the network. Write only report.md in the current task directory. The report must have these headings: Result, Adapter Checks, Lane Mapping, Smoke Gate, Workload, Governance, Risks, Next Adjustment. Include concrete command/path evidence, the selected lane, and any limitation encountered.",
+      "check": "python3 -c 'from pathlib import Path; p=Path(\"report.md\"); text=p.read_text() if p.is_file() else \"\"; required=[\"Result\", \"Adapter Checks\", \"Lane Mapping\", \"Smoke Gate\", \"Workload\", \"Governance\", \"Risks\", \"Next Adjustment\"]; missing=[h for h in required if h not in text]; raise SystemExit(0 if p.is_file() and p.stat().st_size > 500 and not missing else (print(\"FAIL: report.md missing or incomplete headings: \" + \", \".join(missing)), 1)[1])'",
+      "expect_files": [
+        "report.md"
+      ],
+      "timeout_s": 900,
+      "full_access": false,
+      "verified": "Devin produced a non-empty read-only report after adapter validation, lane smoke, and the bounded registry workload.",
+      "governance": {
+        "authority": "paperclip",
+        "execution_spine": "ringer",
+        "direct_omnigent_bypass": false
+      },
+      "lane": "devin",
+      "lane_contract_version": "1.0.0",
+      "adapter_version": "1.0.0",
+      "policy_version": "1.0.0",
+      "capability_mapping": {
+        "contract_version": "1.0.0",
+        "capabilities": [
+          "orchestration",
+          "environment_setup",
+          "cross_service_coordination"
+        ]
+      },
+      "paths": {
+        "executable": "devin",
+        "config": "~/.config/devin/config.json",
+        "state": "~/.config/devin"
+      },
+      "invocation": {
+        "args": [
+          "--print",
+          "--permission-mode",
+          "accept-edits",
+          "--respect-workspace-trust",
+          "false",
+          "--"
+        ]
+      }
+    }
+  ]
+}

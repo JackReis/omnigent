@@ -1,0 +1,14 @@
+{
+  "ok": true,
+  "dry_run": false,
+  "run_name": "omnigent-paperclip-prompt-durability-canary-20260725T003847Z",
+  "manifest_path": "/Users/hermes/Vault/coordination/omnigent-dispatch/runtime/manifests/omnigent-paperclip-prompt-durability-canary-20260725T003847Z.ringer.json",
+  "workdir": "/Users/hermes/Vault/coordination/omnigent-dispatch/runtime/work/omnigent-paperclip-prompt-durability-canary-20260725T003847Z",
+  "engines": [
+    "mock"
+  ],
+  "returncode": 0,
+  "stdout": "mock-worker: wrote 1 file(s): report.md\n\nSummary\nrun_id: omnigent-paperclip-prompt-durability-canary-20260725T003847Z-20260725T003847Z-p16283\ntask                     status   verdict  attempts     tokens  elapsed_s\n-------------------------------------------------------------------------\ndispatch-1-mock          pass     PASS            1                   0.1\nModel log updated; run './ringer.py models' for the per-model scoreboard.\n\nYour results: /Users/hermes/.ringer/artifacts/live/omnigent-paperclip-prompt-durability-canary-20260725T003847Z.html\nOpen it in a browser, or run './ringer.py hud' for the full Ringside view (http://127.0.0.1:8700).\n",
+  "stderr": "",
+  "receipt_path": "/Users/hermes/Vault/coordination/omnigent-dispatch/runtime/receipts/omnigent-paperclip-prompt-durability-canary-20260725T003847Z.json"
+}

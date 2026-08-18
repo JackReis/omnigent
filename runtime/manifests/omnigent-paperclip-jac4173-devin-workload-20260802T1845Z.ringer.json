@@ -1,0 +1,53 @@
+{
+  "run_name": "omnigent-paperclip-jac4173-devin-workload-20260802T1845Z",
+  "workdir": "/Users/hermes/Vault/coordination/omnigent-dispatch/runtime/work/omnigent-paperclip-jac4173-devin-workload-20260802T1845Z",
+  "risk": "low",
+  "orchestrator": {
+    "provider": "local",
+    "model": "devin",
+    "family": "registered-lane",
+    "runtime": "ringer",
+    "profile": "review",
+    "harness": "devin",
+    "orchestrator": "single",
+    "attestation": "Ringer-owned bounded workload for Paperclip JAC-4173 through the validated Devin lane"
+  },
+  "max_parallel": 1,
+  "worktrees": false,
+  "tasks": [
+    {
+      "key": "jac4173-devin-workload",
+      "engine": "devin",
+      "task_type": "paperclip-queue-readonly-coordination-check",
+      "spec": "Execute the assigned Paperclip queue workload JAC-4173, titled 'Coordinator Fleet Coordination Check', as a bounded read-only verification. You are running under Ringer as the registered Devin execution lane; Paperclip remains the authority. First inspect /Users/hermes/Vault/coordination/omnigent-dispatch/fleet/lane-registry.yaml and record the Devin lane contract, allowed scope, return-control rules, executable, and invocation metadata. Then inspect the live local Paperclip API at http://localhost:3101 for the company 87c32b8e-f131-4df8-ad8e-963d01b458e7: read the agent table and the nonterminal issue counts needed to report queue, active runs, and blockers. If the API is unavailable, record the exact HTTP or connection failure and use only local evidence; do not invent live results. Produce only report.md in the current task directory. The report must include these headings exactly: Result, Queue Snapshot, Active Runs, Lane Eligibility, Selected Work, Governance, Evidence, Risks, Next Adjustment. State that JAC-4173 was selected because it is a small, independent, read-only coordination check and that this run is the execution of that queued item. Include an ISO-8601 UTC timestamp, concrete endpoint/path evidence, and a PASS/DEGRADED/BLOCKED result. Do not modify source files, lane registry, Paperclip issues, statuses, assignments, agents, credentials, services, or external systems; do not send messages; do not create or close work. Return control to Ringer on failure, ambiguity, or out-of-scope findings.",
+      "check": "python3 -c 'from pathlib import Path; import re; p=Path(\"report.md\"); text=p.read_text() if p.is_file() else \"\"; required=[\"Result\", \"Queue Snapshot\", \"Active Runs\", \"Lane Eligibility\", \"Selected Work\", \"Governance\", \"Evidence\", \"Risks\", \"Next Adjustment\", \"JAC-4173\", \"2026-08-02T\"]; missing=[h for h in required if h not in text]; ok=p.is_file() and p.stat().st_size > 900 and not missing and re.search(r\"\\b(PASS|DEGRADED|BLOCKED)\\b\", text); raise SystemExit(0 if ok else (print(\"FAIL: report.md missing required evidence or headings: \" + \", \".join(missing)), 1)[1])'",
+      "expect_files": [
+        "report.md"
+      ],
+      "timeout_s": 900,
+      "max_attempts": 2,
+      "full_access": false,
+      "verified": "JAC-4173 produced a timestamped read-only queue and lane eligibility report with executable evidence checks.",
+      "governance": {
+        "authority": "paperclip",
+        "execution_spine": "ringer",
+        "direct_omnigent_bypass": false
+      },
+      "lane": "devin",
+      "lane_contract_version": "1.0.0",
+      "adapter_version": "1.0.0",
+      "policy_version": "1.0.0",
+      "paperclip_issue": "JAC-4173",
+      "invocation": {
+        "args": [
+          "--print",
+          "--permission-mode",
+          "accept-edits",
+          "--respect-workspace-trust",
+          "false",
+          "--"
+        ]
+      }
+    }
+  ]
+}

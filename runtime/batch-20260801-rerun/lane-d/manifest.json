@@ -1,0 +1,37 @@
+{
+  "run_name": "omnigent-paperclip-remaining-priority-rerun-20260801T2035Z",
+  "workdir": "/Users/hermes/Vault/coordination/omnigent-dispatch/runtime/batch-20260801-rerun/lane-d",
+  "risk": "medium",
+  "orchestrator": {
+    "provider": "local",
+    "model": "omnigent",
+    "family": "meta-harness",
+    "runtime": "omnigent-ringer",
+    "profile": "planner",
+    "harness": "claude-native",
+    "orchestrator": "single",
+    "attestation": "Bounded local dispatch through the existing Ringer execution spine"
+  },
+  "max_parallel": 1,
+  "worktrees": false,
+  "tasks": [
+    {
+      "key": "dispatch-1-kimi",
+      "engine": "kimi",
+      "task_type": "omnigent-fleet-dispatch",
+      "spec": "Paperclip is healthy on http://localhost:3101. This is a READ-ONLY triage pass. Do not PATCH issues, assign agents, approve hires, modify repositories, expose secrets, restart services, or run risky commands. Use only GET/read-only inspection and produce a concise report.md with: issue cluster, current blocker, evidence, safe next action, dependencies, verification commands, and whether it is safe to dispatch implementation next. Treat Paperclip as authority and preserve the four-lane guardrail. JAC-3662 is already handled and must be excluded from all recommendations. JAC-4344 and JAC-4390 are unresolved soak-acceptance gates and must remain held.\\nLane D REMAINING PRIORITY QUEUE: cluster and rank all remaining blocked issues not listed in lanes A-C, including duplicate dispatch/audit/coordination records. Do not duplicate active work. Report the next safe implementation wave after lanes A-C and identify any approvals or external dependencies.\n\nWrite a concise completion report to report.md in the current task directory. Explicitly exclude JAC-3662, JAC-4344, and JAC-4390 from implementation recommendations.",
+      "check": "python3 -c 'from pathlib import Path; p=Path(\"report.md\"); raise SystemExit(0 if p.is_file() and p.stat().st_size else 1)'",
+      "expect_files": [
+        "report.md"
+      ],
+      "timeout_s": 1800,
+      "full_access": false,
+      "verified": "Worker produced a non-empty tracked completion report.",
+      "governance": {
+        "authority": "paperclip",
+        "execution_spine": "ringer",
+        "direct_omnigent_bypass": false
+      }
+    }
+  ]
+}

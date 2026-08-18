@@ -1,0 +1,50 @@
+{
+  "run_name": "omnigent-codex-path-recovery-20260805T211730Z",
+  "workdir": "/Users/hermes/Vault/coordination/omnigent-dispatch/runtime/work/omnigent-codex-path-recovery-20260805T211730Z",
+  "risk": "medium",
+  "orchestrator": {
+    "provider": "local",
+    "model": "kimi-k3",
+    "agent": "hermes",
+    "provider_preference": "ollama-cloud",
+    "optional_routes": [
+      "ringer",
+      "devin",
+      "cursor"
+    ],
+    "route_when_available": true,
+    "family": "meta-harness",
+    "runtime": "omnigent-ringer",
+    "profile": "planner",
+    "harness": "claude-native",
+    "orchestrator": "single",
+    "attestation": "Bounded local dispatch through the existing Ringer execution spine"
+  },
+  "max_parallel": 1,
+  "worktrees": false,
+  "tasks": [
+    {
+      "key": "dispatch-1-mock",
+      "engine": "mock",
+      "agent": "hermes",
+      "provider_preference": "ollama-cloud",
+      "task_type": "omnigent-fleet-dispatch",
+      "spec": "MOCK_FILE: report.md\n{\n  \"status\": \"PASS\",\n  \"source\": \"omnigent\",\n  \"route\": \"ringer\",\n  \"worker\": 1,\n  \"prompt\": \"Validate the fleet route without launching a worker\"\n}\nMOCK_END",
+      "check": "python3 -c 'from pathlib import Path; p=Path(\"report.md\"); raise SystemExit(0 if p.is_file() and p.stat().st_size else 1)'",
+      "expect_files": [
+        "report.md"
+      ],
+      "timeout_s": 1800,
+      "full_access": false,
+      "verified": "Worker produced a non-empty tracked completion report.",
+      "governance": {
+        "authority": "paperclip",
+        "execution_spine": "ringer",
+        "lifecycle_owner": "ringer",
+        "direct_omnigent_bypass": false,
+        "max_additional_attempts": 1,
+        "escalation": "paperclip_issue_owner_or_board"
+      }
+    }
+  ]
+}

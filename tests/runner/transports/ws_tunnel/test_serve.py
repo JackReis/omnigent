@@ -25,6 +25,7 @@ from omnigent.runner.transports.ws_tunnel.frames import (
     WSCloseFrame,
     WSFrame,
     WSOpenFrame,
+    decode_frame,
     encode_frame,
 )
 from omnigent.runner.transports.ws_tunnel.serve import (
@@ -638,7 +639,9 @@ async def test_serve_tunnel_once_sends_bearer_header(
         "ping_interval": serve_module.TUNNEL_KEEPALIVE_PING_INTERVAL_S,
         "ping_timeout": serve_module.TUNNEL_KEEPALIVE_PING_TIMEOUT_S,
     }
-    assert isinstance(captured["sent"], str)
+    hello = decode_frame(captured["sent"])
+    assert isinstance(hello, serve_module.HelloFrame)
+    assert "hermes-native" in hello.harnesses
 
 
 async def test_serve_tunnel_once_sends_org_header(

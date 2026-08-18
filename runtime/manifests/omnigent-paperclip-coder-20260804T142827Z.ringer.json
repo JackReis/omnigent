@@ -1,0 +1,41 @@
+{
+  "run_name": "omnigent-paperclip-coder-20260804T142827Z",
+  "workdir": "/Users/hermes/Vault/coordination/omnigent-dispatch",
+  "risk": "medium",
+  "orchestrator": {
+    "provider": "local",
+    "model": "omnigent",
+    "family": "meta-harness",
+    "runtime": "omnigent-ringer",
+    "profile": "coder",
+    "harness": "codex-native",
+    "orchestrator": "single",
+    "attestation": "Bounded local dispatch through the existing Ringer execution spine"
+  },
+  "max_parallel": 1,
+  "worktrees": false,
+  "tasks": [
+    {
+      "key": "dispatch-1-kimi",
+      "engine": "kimi",
+      "task_type": "omnigent-fleet-dispatch",
+      "spec": "Keep Vault-only and Talaris-specific wrappers disabled by default on Aegis. Add an explicit allowlist/retirement record and an admission checklist for any future SSH conversion. The wrapper set must not silently expand on startup. The startup allowlist exactly identifies enabled Aegis-safe clients. Vault-only/Talaris-specific clients are disabled or explicitly retired with reasons. Any SSH conversion requires noninteractive auth, narrow authority, health verification, and rollback evidence before enablement. A deterministic check fails if an unapproved wrapper enters startup. Artifact, verification, commit, push, and rollback are recorded.\n\nWrite a concise completion report to report.md in the current task directory.",
+      "check": "python3 -c 'from pathlib import Path; p=Path(\"report.md\"); raise SystemExit(0 if p.is_file() and p.stat().st_size else 1)'",
+      "expect_files": [
+        "report.md"
+      ],
+      "timeout_s": 1800,
+      "full_access": false,
+      "verified": "Worker produced a non-empty tracked completion report.",
+      "governance": {
+        "authority": "paperclip",
+        "execution_spine": "ringer",
+        "lifecycle_owner": "ringer",
+        "direct_omnigent_bypass": false,
+        "max_additional_attempts": 1,
+        "escalation": "paperclip_issue_owner_or_board"
+      },
+      "bead_id": "hermes-9ill.7"
+    }
+  ]
+}

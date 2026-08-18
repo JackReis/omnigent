@@ -799,6 +799,7 @@ async def _send_hello(
                     "openai-agents",
                     "open-responses",
                     "pi",
+                    "hermes-native",
                 ],
                 envs=["os_sandbox"],
             )

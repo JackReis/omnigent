@@ -1,0 +1,14 @@
+{
+  "ok": true,
+  "dry_run": true,
+  "run_name": "omnigent-paperclip-planner-20260804T142745Z",
+  "manifest_path": "/Users/hermes/Vault/coordination/omnigent-dispatch/runtime/manifests/omnigent-paperclip-planner-20260804T142745Z.ringer.json",
+  "workdir": "/Users/hermes/Vault/coordination/omnigent-dispatch",
+  "engines": [
+    "kimi"
+  ],
+  "returncode": 0,
+  "stdout": "DRY RUN: no codex workers will be spawned.\nRun: omnigent-paperclip-planner-20260804T142745Z\nIdentity: omnigent\nConfig: /Users/hermes/.config/ringer/config.toml\nWorkdir: /Users/hermes/Vault/coordination/omnigent-dispatch\nMax parallel: 1\nWorktrees: False repo=None\nState dir: /Users/hermes/.ringer\nEval backend: postgres\nDashboard: off\nArtifacts: on\n  live status page: /Users/hermes/.ringer/artifacts/omnigent-paperclip-planner-20260804T142745Z-20260804T142751Z-p75595.html\n  final report:     /Users/hermes/.ringer/artifacts/omnigent-paperclip-planner-20260804T142745Z-20260804T142751Z-p75595-report.html\n  runs index:       /Users/hermes/.ringer/artifacts/index.html\nTasks:\n  - dispatch-1-kimi\n    engine: kimi\n    dir: /Users/hermes/Vault/coordination/omnigent-dispatch/dispatch-1-kimi\n    timeout_s: 1800\n    full_access: false\n    expect_files: ['report.md']\n    check: python3 -c 'from pathlib import Path; p=Path(\"report.md\"); raise SystemExit(0 if p.is_file() and p.stat().st_size else 1)'\n    command: /Users/hermes/.kimi-code/bin/kimi --model kimi-for-coding/k2p7 --output-format stream-json --skills-dir /Users/hermes/.config/ringer/empty-skills --prompt 'Decide and verify placement for Gmail, Google Calendar, and Fleet Memory: Aegis-native or Talaris-routed. No interactive/device-flow credential may be used. For an approved service, prepare a one-service-at-a-time enablement and verification plan; do not bulk-enable MCP clients. Each service must have an explicit Aegis-native or Talaris-routed decision with decision owner. Any Aegis-native option specifies a noninteractive credential source, least authority, health check, and rollback. Services without a noninteractive verified route remain disabled. Re-enable sequence is one at a time, with health/behavior verification gate between services. Decision record and evidence are durable.\n\nWrite a concise completion report to report.md in the current task directory.' < /dev/null\n",
+  "stderr": "",
+  "receipt_path": "/Users/hermes/Vault/coordination/omnigent-dispatch/runtime/receipts/omnigent-paperclip-planner-20260804T142745Z.json"
+}

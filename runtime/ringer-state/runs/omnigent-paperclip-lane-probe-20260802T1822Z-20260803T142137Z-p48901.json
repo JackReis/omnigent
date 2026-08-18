@@ -1,0 +1,86 @@
+{
+  "artifact_path": "/Users/hermes/Vault/coordination/omnigent-dispatch/runtime/ringer-state/artifacts/omnigent-paperclip-lane-probe-20260802T1822Z-20260803T142137Z-p48901.html",
+  "dashboard_port": null,
+  "elapsed_s": 89.1,
+  "fail": 0,
+  "finished": true,
+  "identity": "omnigent",
+  "live_path": "/Users/hermes/Vault/coordination/omnigent-dispatch/runtime/ringer-state/artifacts/live/omnigent-paperclip-lane-probe-20260802T1822Z.html",
+  "max_parallel": 1,
+  "pass": 1,
+  "pid": 48901,
+  "port": null,
+  "report_path": "/Users/hermes/Vault/coordination/omnigent-dispatch/runtime/ringer-state/artifacts/omnigent-paperclip-lane-probe-20260802T1822Z-20260803T142137Z-p48901-report.html",
+  "report_ready": true,
+  "run_id": "omnigent-paperclip-lane-probe-20260802T1822Z-20260803T142137Z-p48901",
+  "run_name": "omnigent-paperclip-lane-probe-20260802T1822Z",
+  "started_at": "2026-08-03T14:21:37.510804+00:00",
+  "state": "finished",
+  "summary": {
+    "fail": 0,
+    "pass": 1,
+    "tokens": 0
+  },
+  "tasks": [
+    {
+      "activity": "wrote report.md",
+      "attempts": 1,
+      "check": "python3 -c 'from pathlib import Path; p=Path(\"report.md\"); text=p.read_text() if p.is_file() else \"\"; required=[\"Result\", \"Devin Lane\", \"Cursor Lane\", \"Governance\", \"Risks\", \"Next Adjustment\"]; missing=[h for h in required if h not in text]; raise SystemExit(0 if p.is_file() and p.stat().st_size > 400 and not missing else (print(\"FAIL: report.md missing or incomplete headings: \" + \", \".join(missing)), 1)[1])'",
+      "check_output_tail": "",
+      "check_returncode": 0,
+      "check_timed_out": false,
+      "children": 0,
+      "deliverable_notes": [],
+      "deliverables": [
+        {
+          "bytes": 8869,
+          "name": "report.md",
+          "path": "/Users/hermes/Vault/coordination/omnigent-dispatch/runtime/ringer-state/artifacts/deliverables/omnigent-paperclip-lane-probe-20260802T1822Z-20260803T142137Z-p48901/devin-lane-probe/report.md"
+        }
+      ],
+      "elapsed_s": 89.1,
+      "engine": "devin",
+      "key": "devin-lane-probe",
+      "log_path": "/Users/hermes/Vault/coordination/omnigent-dispatch/runtime/work/omnigent-paperclip-lane-probe-20260802T1822Z/devin-lane-probe/worker.log",
+      "log_tail": [
+        "",
+        "[report.md](file:///Users/hermes/Vault/coordination/omnigent-dispatch/runtime/work/omnigent-paperclip-lane-probe-20260802T1822Z/devin-lane-probe/report.md)",
+        "[ringer.py] attempt 1 exited rc=0"
+      ],
+      "log_tail_full": [
+        "",
+        "[ringer.py] attempt 1 started 2026-08-03T14:21:37.568006+00:00",
+        "[ringer.py] engine: devin",
+        "[ringer.py] launch receipt: lr-01KZ400SWZQFGF03BP987941V5",
+        "[ringer.py] command: /Users/hermes/.local/bin/devin --print --permission-mode dangerous --respect-workspace-trust false -- 'Perform a read-only lane-contract smoke test for the Paperclip/Omnigent fleet. Inspect /Users/hermes/Vault/coordination/omnigent-dispatch/fleet/lane-registry.yaml and verify the registered devin and cursor lanes, their contract/adapter/policy versions, capabilities, executable/config/state paths, invocation metadata, and governance fields. Do not modify the repository, call Paperclip APIs, assign or update issues, create agents, restart services, expose secrets, or access the network. Write only report.md in the current task directory. The report must have these headings: Result, Devin Lane, Cursor Lane, Governance, Risks, Next Adjustment. State whether the lane metadata is internally consistent and include concrete evidence from the registry.' < /dev/null",
+        "I\u2019ll read the lane registry and then write the report in the current task directory.Done. I wrote `report.md` to the task directory with the required headings.",
+        "",
+        "**Summary:** Devin and Cursor lanes are **internally consistent** with the registry and with each other. Both lanes align their contract/adapter/policy versions (`1.0.0`), mirror `capabilities` into `capability_mapping`, and set `omnigent_direct_allowed: false` in accordance with `omnigent_direct_bypass: denied_for_registered_lanes`.",
+        "",
+        "The main finding is a fleet-wide governance drift: the other six registered lanes (Hermes, Claude, Codex, Kimi, Pi, OpenCode) all set `omnigent_direct_allowed: true`, which contradicts the top-level policy. I noted that plus path/invocation concerns in the **Risks** section and remediation steps in **Next Adjustment**.",
+        "",
+        "[report.md](file:///Users/hermes/Vault/coordination/omnigent-dispatch/runtime/work/omnigent-paperclip-lane-probe-20260802T1822Z/devin-lane-probe/report.md)",
+        "[ringer.py] attempt 1 exited rc=0"
+      ],
+      "model": "",
+      "report_paths": {},
+      "setup_error": null,
+      "spec": "Perform a read-only lane-contract smoke test for the Paperclip/Omnigent fleet. Inspect /Users/hermes/Vault/coordination/omnigent-dispatch/fleet/lane-registry.yaml and verify the registered devin and cursor lanes, their contract/adapter/policy versions, capabilities, executable/config/state paths, invocation metadata, and governance fields. Do not modify the repository, call Paperclip APIs, assign or update issues, create agents, restart services, expose secrets, or access the network. Write only report.md in the current task directory. The report must have these headings: Result, Devin Lane, Cursor Lane, Governance, Risks, Next Adjustment. State whether the lane metadata is internally consistent and include concrete evidence from the registry.",
+      "spec_short": "Perform a read-only lane-contract smoke test for the Paperclip/Omnigent fleet. Inspect /Users/hermes/Vault/coordinati...",
+      "status": "pass",
+      "taskdir": "/Users/hermes/Vault/coordination/omnigent-dispatch/runtime/work/omnigent-paperclip-lane-probe-20260802T1822Z/devin-lane-probe",
+      "timeout_s": 600,
+      "tokens": null,
+      "verdict": "PASS",
+      "verified": "Devin produced a non-empty read-only lane-contract report with all required governance sections."
+    }
+  ],
+  "tokens": 0,
+  "totals": {
+    "done": 1,
+    "fail": 0,
+    "pass": 1,
+    "running": 0,
+    "tokens": 0
+  }
+}

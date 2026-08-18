@@ -1,3 +1,8 @@
+---
+workstream: [personal-misc]
+tagged_by: worker-hermes-20260814
+---
+
 # Agent guidance
 
 Guidance for AI agents (Claude Code, Copilot, Cursor, etc.) working in this

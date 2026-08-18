@@ -1,0 +1,63 @@
+{
+  "run_name": "omnigent-paperclip-review-20260804T142404Z",
+  "workdir": "/Users/hermes/Vault/coordination/omnigent-dispatch",
+  "risk": "medium",
+  "orchestrator": {
+    "provider": "local",
+    "model": "omnigent",
+    "family": "meta-harness",
+    "runtime": "omnigent-ringer",
+    "profile": "review",
+    "harness": "hermes",
+    "orchestrator": "panel",
+    "attestation": "Bounded local dispatch through the existing Ringer execution spine"
+  },
+  "max_parallel": 2,
+  "worktrees": false,
+  "tasks": [
+    {
+      "key": "dispatch-1-kimi",
+      "engine": "kimi",
+      "task_type": "omnigent-fleet-dispatch",
+      "spec": "Implement the minimum deny-by-default claim gate identified in the ADR-0019 admission pass for Bifrost hub hardening. The claim gate must check canonical Beads claim evidence and caller identity, reject replay/stale/malformed/unavailable cases, and produce auditable evidence. Do not enable Ringside write operations merely by completing implementation; enablement requires the separately recorded proof verdict.\n\nAcceptance criteria:\n1. Fixtures prove allowed claim, absent claim, wrong claimant, replay/stale claim, malformed authority envelope, and unavailable Beads behavior\n2. All failures deny writes\n3. Successful proof emits stable evidence tied to a Beads identifier and claimant identity\n4. Ringside remains read-only unless the proof passes and an explicit approval is recorded\n5. Artifact, verification, commit, push, revocation/rollback are recorded\n\nBead: hermes-9ill.4\nParent epic: hermes-9ill [epic] Bifrost hub hardening \u2014 Ringer-gated execution\n\nYou are fleet worker 1 of 2. Produce an independent result and do not coordinate through untracked channels.\n\nWrite a concise completion report to report.md in the current task directory.",
+      "check": "python3 -c 'from pathlib import Path; p=Path(\"report.md\"); raise SystemExit(0 if p.is_file() and p.stat().st_size else 1)'",
+      "expect_files": [
+        "report.md"
+      ],
+      "timeout_s": 1800,
+      "full_access": false,
+      "verified": "Worker produced a non-empty tracked completion report.",
+      "governance": {
+        "authority": "paperclip",
+        "execution_spine": "ringer",
+        "lifecycle_owner": "ringer",
+        "direct_omnigent_bypass": false,
+        "max_additional_attempts": 1,
+        "escalation": "paperclip_issue_owner_or_board"
+      },
+      "bead_id": "hermes-9ill.4"
+    },
+    {
+      "key": "dispatch-2-mock",
+      "engine": "mock",
+      "task_type": "omnigent-fleet-dispatch",
+      "spec": "MOCK_FILE: report.md\n{\n  \"status\": \"PASS\",\n  \"source\": \"omnigent\",\n  \"route\": \"ringer\",\n  \"worker\": 2,\n  \"prompt\": \"Implement the minimum deny-by-default claim gate identified in the ADR-0019 admission pass for Bifrost hub hardening. The claim gate must check canonical Beads claim evidence and caller identity, reject replay/stale/malformed/unavailable cases, and produce auditable evidence. Do not enable Ringside write operations merely by completing implementation; enablement requires the separately recorded proof verdict.\\n\\nAcceptance criteria:\\n1. Fixtures prove allowed claim, absent claim, wrong claimant, replay/stale claim, malformed authority envelope, and unavailable Beads behavior\\n2. All failures deny writes\\n3. Successful proof emits stable evidence tied to a Beads identifier and claimant identity\\n4. Ringside remains read-only unless the proof passes and an explicit approval is recorded\\n5. Artifact, verification, commit, push, revocation/rollback are recorded\\n\\nBead: hermes-9ill.4\\nParent epic: hermes-9ill [epic] Bifrost hub hardening \\u2014 Ringer-gated execution\"\n}\nMOCK_END",
+      "check": "python3 -c 'from pathlib import Path; p=Path(\"report.md\"); raise SystemExit(0 if p.is_file() and p.stat().st_size else 1)'",
+      "expect_files": [
+        "report.md"
+      ],
+      "timeout_s": 1800,
+      "full_access": false,
+      "verified": "Worker produced a non-empty tracked completion report.",
+      "governance": {
+        "authority": "paperclip",
+        "execution_spine": "ringer",
+        "lifecycle_owner": "ringer",
+        "direct_omnigent_bypass": false,
+        "max_additional_attempts": 1,
+        "escalation": "paperclip_issue_owner_or_board"
+      },
+      "bead_id": "hermes-9ill.4"
+    }
+  ]
+}

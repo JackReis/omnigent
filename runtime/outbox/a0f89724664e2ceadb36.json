@@ -1,0 +1,51 @@
+{
+  "schema": "fleet-service-update/v1",
+  "event_id": "a0f89724664e2ceadb36",
+  "event": "dispatch",
+  "durable_ref": "plan-it",
+  "occurred_at": "2026-07-31T02:21:14.643153+00:00",
+  "route": {
+    "route": "omnigent-direct",
+    "profile": "planner",
+    "reason": "direct harness requested",
+    "harness": "claude-native",
+    "orchestrator": "single"
+  },
+  "evidence": {
+    "manifest": null,
+    "receipt": null,
+    "artifacts": []
+  },
+  "deliveries": {
+    "holographic": {
+      "status": "queued",
+      "attempts": 0
+    },
+    "honcho": {
+      "status": "queued",
+      "attempts": 0
+    },
+    "hindsight": {
+      "status": "queued",
+      "attempts": 0
+    },
+    "openbrain1": {
+      "status": "queued",
+      "attempts": 0
+    },
+    "gbrain": {
+      "status": "queued",
+      "attempts": 0
+    },
+    "vaults": {
+      "status": "queued",
+      "attempts": 0
+    }
+  },
+  "retry": {
+    "policy": "exponential",
+    "base_seconds": 30,
+    "max_seconds": 3600,
+    "never_drop": true
+  }
+}
