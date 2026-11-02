@@ -74,11 +74,8 @@ def _pending(**flags: Any) -> PendingElicitation:
     return PendingElicitation(request=request, card_ts="200.1", **flags)
 
 
-async def test_finish_pending_declines_when_timeout_decline_post_failed() -> None:
-    # Regression: a timed-out elicitation whose decline POST ALSO failed leaves
-    # the server parked (timed_out=True AND delivery_failed=True). finish_pending
-    # must still re-decline to release the park — timed_out must not mask
-    # delivery_failed and skip the release, or the session wedges.
+async def test_finish_pending_preserves_unknown_timeout_delivery() -> None:
+    # A timeout POST can reach the server even when its response is lost.
     omnigent = _RecordingOmnigent()
     controller = _controller()
     turn = _turn()
@@ -87,8 +84,8 @@ async def test_finish_pending_declines_when_timeout_decline_post_failed() -> Non
 
     await controller.finish_pending(omnigent, turn, state)  # type: ignore[arg-type]
 
-    # The park was released with a best-effort decline.
-    assert omnigent.resolve_calls == [("conv_1", "el_1", False)]
+    assert omnigent.resolve_calls == []
+    assert "Delivery is unknown" in turn.slack_client.updates[-1]["blocks"][0]["text"]["text"]
 
 
 async def test_finish_pending_no_redecline_when_timeout_decline_succeeded() -> None:

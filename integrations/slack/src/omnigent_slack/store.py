@@ -1,11 +1,23 @@
 from __future__ import annotations
 
 import time
+import uuid
+from dataclasses import dataclass
 from pathlib import Path
 
 import aiosqlite
 
 from omnigent_slack.models import SessionRecord, ThreadKey, UserConfig
+
+
+@dataclass(frozen=True)
+class TurnObservation:
+    run_id: str
+    owner_user_id: str
+    session_id: str | None
+    state: str
+    native_response_id: str | None = None
+    acceptance: str = "unknown"
 
 
 class SQLiteStore:
@@ -43,6 +55,17 @@ class SQLiteStore:
             )
             await db.execute(
                 """
+                CREATE TABLE IF NOT EXISTS slack_turn_observations (
+                    team_id TEXT NOT NULL, channel_id TEXT NOT NULL, thread_ts TEXT NOT NULL,
+                    run_id TEXT NOT NULL, owner_user_id TEXT NOT NULL,
+                    session_id TEXT, state TEXT NOT NULL, native_response_id TEXT,
+                    updated_at INTEGER NOT NULL,
+                    PRIMARY KEY (team_id, channel_id, thread_ts)
+                )
+                """
+            )
+            await db.execute(
+                """
                 CREATE TABLE IF NOT EXISTS user_configs (
                     team_id TEXT NOT NULL,
                     user_id TEXT NOT NULL,
@@ -58,6 +81,80 @@ class SQLiteStore:
                 """
             )
             await db.commit()
+
+    async def reserve_turn(self, key: ThreadKey, owner_user_id: str) -> str | None:
+        """Reserve before any remote side effect; abandoned reservations never expire."""
+        run_id = uuid.uuid4().hex
+        async with aiosqlite.connect(self._path) as db:
+            cursor = await db.execute(
+                """
+                INSERT INTO slack_turn_observations
+                    (team_id, channel_id, thread_ts, run_id, owner_user_id, state, updated_at)
+                VALUES (?, ?, ?, ?, ?, 'reserved', ?)
+                ON CONFLICT(team_id, channel_id, thread_ts) DO UPDATE SET
+                    run_id=excluded.run_id, owner_user_id=excluded.owner_user_id,
+                    session_id=NULL, native_response_id=NULL, state='reserved',
+                    updated_at=excluded.updated_at
+                WHERE slack_turn_observations.state = 'source_terminal'
+                  AND slack_turn_observations.owner_user_id = excluded.owner_user_id
+                """,
+                (
+                    key.team_id,
+                    key.channel_id,
+                    key.thread_ts,
+                    run_id,
+                    owner_user_id,
+                    int(time.time()),
+                ),
+            )
+            reserved = cursor.rowcount == 1
+            await cursor.close()
+            await db.commit()
+        return run_id if reserved else None
+
+    async def observe_turn(
+        self,
+        key: ThreadKey,
+        run_id: str | None,
+        state: str,
+        *,
+        session_id: str | None = None,
+        native_response_id: str | None = None,
+    ) -> None:
+        if run_id is None:
+            return
+        async with aiosqlite.connect(self._path) as db:
+            await db.execute(
+                """
+                UPDATE slack_turn_observations
+                SET state=?, session_id=COALESCE(?, session_id),
+                    native_response_id=COALESCE(?, native_response_id), updated_at=?
+                WHERE team_id=? AND channel_id=? AND thread_ts=? AND run_id=?
+                """,
+                (
+                    state,
+                    session_id,
+                    native_response_id,
+                    int(time.time()),
+                    key.team_id,
+                    key.channel_id,
+                    key.thread_ts,
+                    run_id,
+                ),
+            )
+            await db.commit()
+
+    async def get_turn_observation(self, key: ThreadKey) -> TurnObservation | None:
+        async with aiosqlite.connect(self._path) as db:
+            cursor = await db.execute(
+                """SELECT run_id, owner_user_id, session_id, state, native_response_id
+                FROM slack_turn_observations
+                WHERE team_id=? AND channel_id=? AND thread_ts=?""",
+                (key.team_id, key.channel_id, key.thread_ts),
+            )
+            row = await cursor.fetchone()
+            await cursor.close()
+        return TurnObservation(*row) if row is not None else None
 
     async def get_session(self, key: ThreadKey) -> SessionRecord | None:
         async with aiosqlite.connect(self._path) as db:

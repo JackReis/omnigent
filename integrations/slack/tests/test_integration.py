@@ -17,13 +17,16 @@ the focus on the omnigent-slack ↔ server logic rather than Slack transport.
 from __future__ import annotations
 
 import asyncio
+import json
 from pathlib import Path
 
+import httpx
+import pytest
 import respx
 from cryptography.fernet import Fernet
 from fakes import FakeOmnigentServer, RecordingSlackClient, sse_delta, sse_status
 from omnigent_slack.auth_manager import AuthManager
-from omnigent_slack.models import UserConfig
+from omnigent_slack.models import ThreadKey, UserConfig
 from omnigent_slack.omnigent import OmnigentClientPool
 from omnigent_slack.service import SlackOmnigentService
 from omnigent_slack.setup import SetupFlow
@@ -271,10 +274,8 @@ async def test_auth_wall_mid_turn_prompts_relogin(tmp_path: Path) -> None:
 
 
 @respx.mock
-async def test_runner_unavailable_triggers_launch_and_retry(tmp_path: Path) -> None:
-    """A pre-existing session whose bound runner is gone: the first submit returns
-    503 runner_unavailable, so the client launches a fresh runner and retries the
-    turn — the answer still streams."""
+async def test_runner_unavailable_after_submit_requires_reconciliation(tmp_path: Path) -> None:
+    """A submission error is not authorization to retry an ambiguous original turn."""
     server = FakeOmnigentServer(_SERVER)
     server.first_submit_runner_unavailable = True
     server.install(respx.mock)
@@ -298,16 +299,19 @@ async def test_runner_unavailable_triggers_launch_and_retry(tmp_path: Path) -> N
             client=client,
             context={"bot_user_id": "B1"},
         )
-        await _wait_for_stream_stop(client, service)
+        await _wait_for_turns(service)
     finally:
         await service.shutdown()
         await pool.aclose_all()
 
-    # Server side: the 503 on the first submit drove a runner launch, then a retry.
-    assert server.paths("POST").count(f"/v1/sessions/{server.session_id}/events") == 2
-    assert "/v1/hosts/h1/runners" in server.paths("POST")
-    # Slack side: the answer streamed despite the mid-turn runner miss.
-    assert "Here is the answer." in client.streamed_text
+    assert server.paths("POST").count(f"/v1/sessions/{server.session_id}/events") == 1
+    assert "/v1/hosts/h1/runners" not in server.paths("POST")
+    assert client.streams == []
+    assert "Here is the answer." not in client.streamed_text
+    assert any("Delivery is unknown" in post.get("text", "") for post in client.posts)
+    observation = await store.get_turn_observation(key)
+    assert observation and observation.state == "unknown"
+    assert observation.acceptance == "unknown"
 
 
 # ── Scenario 6: host unavailable on launch → host guidance, no orphan ──────────
@@ -494,6 +498,64 @@ async def test_no_delta_turn_recovers_committed_answer(tmp_path: Path) -> None:
     assert f"/v1/sessions/{server.session_id}/items" in server.paths("GET")
     # Slack side: the recovered committed answer was delivered.
     assert "Recovered answer." in client.streamed_text
+
+
+@pytest.mark.parametrize(
+    "completion_id,reopened", [("other", False), ("original", False), ("original", True)]
+)
+@respx.mock
+async def test_partial_completion_eof_preserves_original_http_turn(
+    tmp_path: Path, completion_id: str, reopened: bool
+) -> None:
+    events = [
+        {"type": "session.status", "status": "running", "response_id": "original"},
+        {"type": "response.completed", "response_id": completion_id},
+    ]
+    if reopened:
+        events.append({"type": "session.status", "status": "running", "response_id": "next"})
+    server = FakeOmnigentServer(_SERVER)
+    server.sse_body = "".join("data: " + json.dumps(event) + "\n\n" for event in events)
+    server.install(respx.mock)
+    # A session-level idle snapshot has no native response ID for this run.
+    respx.get(_SERVER + "/v1/sessions/conv_1").mock(
+        return_value=httpx.Response(200, json={"status": "idle", "harness": "claude-native"})
+    )
+    store = await _store(tmp_path)
+    await _configure_user(store, "T1", "U1")
+    key = ThreadKey("T1", "C1", "100.1")
+    pool = OmnigentClientPool()
+    service = SlackOmnigentService(store=store, pool=pool, setup=_NoopSetup(), server_url=_SERVER)
+    slack = RecordingSlackClient()
+    try:
+        await service.handle_app_mention(
+            body={"team_id": "T1", "event_id": "original"},
+            event={"channel": "C1", "ts": "100.1", "user": "U1", "text": "<@B1> edit"},
+            client=slack,
+            context={"bot_user_id": "B1"},
+        )
+        await _wait_for_turns(service)
+        original = await store.get_turn_observation(key)
+        await service.handle_app_mention(
+            body={"team_id": "T1", "event_id": "followup"},
+            event={
+                "channel": "C1",
+                "thread_ts": "100.1",
+                "ts": "100.2",
+                "user": "U1",
+                "text": "<@B1> retry edit",
+            },
+            client=slack,
+            context={"bot_user_id": "B1"},
+        )
+        await _wait_for_turns(service)
+        assert original and original.state == "unknown"
+        assert original.acceptance == "unknown"
+        assert original.native_response_id == ("next" if reopened else "original")
+        assert await store.get_turn_observation(key) == original
+        assert server.paths("POST").count("/v1/sessions/conv_1/events") == 1
+    finally:
+        await service.shutdown()
+        await pool.aclose_all()
 
 
 # ── minimal setup/ack doubles for the service path ────────────────────────────
