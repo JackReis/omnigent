@@ -1,5 +1,7 @@
+import asyncio
 from pathlib import Path
 
+import pytest
 from omnigent_slack.models import ThreadKey, UserConfig
 from omnigent_slack.store import SQLiteStore
 
@@ -78,3 +80,59 @@ async def test_store_unclaim_event_allows_reclaim(tmp_path: Path) -> None:
     # A no-op without an id, and harmless on an unknown id.
     await store.unclaim_event(None)
     await store.unclaim_event("never-seen")
+
+
+@pytest.mark.parametrize(
+    "state", ["reserved", "session_known", "submitting", "observing", "unknown"]
+)
+async def test_turn_observation_survives_restart_without_retry(tmp_path: Path, state: str) -> None:
+    path = tmp_path / "store.sqlite3"
+    store = SQLiteStore(path)
+    await store.initialize()
+    key = ThreadKey("T1", "C1", "100.1")
+    run_id = await store.reserve_turn(key, "U1")
+    assert run_id
+    await store.observe_turn(
+        key, run_id, state, session_id="original", native_response_id="resp_1"
+    )
+    reopened = SQLiteStore(path)
+    await reopened.initialize()
+    assert await reopened.reserve_turn(key, "U1") is None
+    assert await reopened.reserve_turn(key, "U2") is None
+    observation = await reopened.get_turn_observation(key)
+    assert observation
+    assert observation.run_id == run_id
+    assert observation.session_id == "original"
+    assert observation.native_response_id == "resp_1"
+    assert observation.state == state
+    assert observation.acceptance == "unknown"
+    await reopened.observe_turn(key, "stale-run", "source_terminal")
+    assert await reopened.get_turn_observation(key) == observation
+
+
+async def test_source_terminal_frees_thread_without_acceptance(tmp_path: Path) -> None:
+    store = SQLiteStore(tmp_path / "store.sqlite3")
+    await store.initialize()
+    key = ThreadKey("T1", "C1", "100.1")
+    first = await store.reserve_turn(key, "U1")
+    await store.observe_turn(key, first, "source_terminal", session_id="original")
+    observation = await store.get_turn_observation(key)
+    assert observation and observation.acceptance == "unknown"
+    assert await store.reserve_turn(key, "U2") is None
+    second = await store.reserve_turn(key, "U1")
+    assert second and second != first
+    await store.observe_turn(key, first, "source_terminal")
+    assert await store.reserve_turn(key, "U1") is None
+
+
+async def test_turn_reservation_is_atomic_across_connections(tmp_path: Path) -> None:
+    path = tmp_path / "store.sqlite3"
+    store = SQLiteStore(path)
+    await store.initialize()
+    key = ThreadKey("T1", "C1", "100.1")
+    reservations = await asyncio.gather(
+        *(SQLiteStore(path).reserve_turn(key, "U1") for _ in range(8))
+    )
+    assert sum(value is not None for value in reservations) == 1
+    assert await store.reserve_turn(ThreadKey("T2", "C1", "100.1"), "U1")
+    assert await store.reserve_turn(ThreadKey("T1", "D1", "100.1"), "U1")

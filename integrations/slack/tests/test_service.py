@@ -1,11 +1,13 @@
 import asyncio
 from collections.abc import AsyncIterator
+from copy import deepcopy
+from dataclasses import replace
 from pathlib import Path
 from typing import Any
 
 import omnigent_slack.service as service_module
 import pytest
-from omnigent_slack.approvals import Verdict, parse_action_value
+from omnigent_slack.approvals import Verdict, parse_action_value, route_elicitation_click
 from omnigent_slack.models import ThreadKey, UserConfig
 from omnigent_slack.omnigent import (
     AuthRequiredError,
@@ -944,7 +946,8 @@ async def test_exhausted_reconnect_shows_non_alarming_text(tmp_path: Path) -> No
     # The notice is a public post (not ephemeral): the non-alarming stream-drop
     # text, never the "server unreachable / reconfigure" guidance.
     text = slack.posts[-1]["text"]
-    assert text == _STREAM_INTERRUPTED_TEXT
+    assert any(post["text"] == _STREAM_INTERRUPTED_TEXT for post in slack.posts)
+    assert "Delivery is unknown" in text
     assert text != _SERVER_UNREACHABLE_TEXT
     assert "reconfigure" not in text
 
@@ -2121,6 +2124,19 @@ def _card_session_id(card: dict[str, Any]) -> str:
     return str(_card_target(card).session_id)
 
 
+def _interaction_body(card: dict[str, Any], *, accepted: bool = True) -> dict[str, Any]:
+    actions = next(block["elements"] for block in card["blocks"] if block["type"] == "actions")
+    action = actions[0 if accepted else 1]
+    return {
+        "user": {"id": _card_target(card).owner_user_id},
+        "team": {"id": "T1"},
+        "channel": {"id": card["channel"]},
+        "message": {"ts": card["ts"], "thread_ts": card["thread_ts"]},
+        "container": {"message_ts": card["ts"], "channel_id": card["channel"]},
+        "actions": [action],
+    }
+
+
 async def _wait_for_resolved(omnigent: "FakeOmnigentClient", count: int = 1) -> None:
     """Wait until the turn has forwarded ``count`` approval verdicts to the server.
 
@@ -2152,7 +2168,10 @@ async def test_tool_approval_approve_resumes_turn(tmp_path: Path) -> None:
     eid = _card_elicitation_id(card)
     sid = _card_session_id(card)
     delivered = await service.handle_elicitation_action(
-        session_id=sid, elicitation_id=eid, verdict=Verdict(accepted=True)
+        session_id=sid,
+        elicitation_id=eid,
+        verdict=Verdict(accepted=True),
+        body=_interaction_body(card),
     )
     await _wait_for_resolved(omnigent)
     await service.shutdown()
@@ -2195,7 +2214,10 @@ async def test_short_pre_card_text_is_flushed_before_the_card(tmp_path: Path) ->
     eid = _card_elicitation_id(card)
     sid = _card_session_id(card)
     await service.handle_elicitation_action(
-        session_id=sid, elicitation_id=eid, verdict=Verdict(accepted=True)
+        session_id=sid,
+        elicitation_id=eid,
+        verdict=Verdict(accepted=True),
+        body=_interaction_body(card),
     )
     await _wait_for_resolved(omnigent)
     await service.shutdown()
@@ -2284,7 +2306,10 @@ async def test_tool_approval_deny_forwards_decline(tmp_path: Path) -> None:
     eid = _card_elicitation_id(card)
     sid = _card_session_id(card)
     await service.handle_elicitation_action(
-        session_id=sid, elicitation_id=eid, verdict=Verdict(accepted=False)
+        session_id=sid,
+        elicitation_id=eid,
+        verdict=Verdict(accepted=False),
+        body=_interaction_body(card, accepted=False),
     )
     await _wait_for_resolved(omnigent)
     await service.shutdown()
@@ -2425,7 +2450,10 @@ async def test_verdict_post_failure_shows_delivery_failed_not_approved(tmp_path:
     eid = _card_elicitation_id(card)
     sid = _card_session_id(card)
     await service.handle_elicitation_action(
-        session_id=sid, elicitation_id=eid, verdict=Verdict(accepted=True)
+        session_id=sid,
+        elicitation_id=eid,
+        verdict=Verdict(accepted=True),
+        body=_interaction_body(card),
     )
     # The turn never gets the push (the server never received the verdict); the
     # card is finalized at turn teardown with the delivery-failure outcome.
@@ -2477,14 +2505,15 @@ async def test_delivery_failed_releases_server_park_at_turn_end(tmp_path: Path) 
     eid = _card_elicitation_id(card)
     sid = _card_session_id(card)
     await service.handle_elicitation_action(
-        session_id=sid, elicitation_id=eid, verdict=Verdict(accepted=True)
+        session_id=sid,
+        elicitation_id=eid,
+        verdict=Verdict(accepted=True),
+        body=_interaction_body(card),
     )
     await service.shutdown()
 
-    # Two calls: the failed verdict delivery (accepted=True), then the park-release
-    # decline (accepted=False) at turn end so the server isn't left wedged.
-    assert (eid, True) in omnigent.resolve_calls
-    assert (eid, False) in omnigent.resolve_calls
+    # A lost response does not prove non-delivery; no contradictory retry.
+    assert omnigent.resolve_calls == [(eid, True)]
     # Card still shows the delivery-failure label, not "Approved".
     card_text = slack.updates[-1]["blocks"][0]["text"]["text"]
     assert "Couldn't be delivered" in card_text
@@ -2560,7 +2589,10 @@ async def test_denied_approval_does_not_resurrect_prior_answer(tmp_path: Path) -
     eid = _card_elicitation_id(card)
     sid = _card_session_id(card)
     await service.handle_elicitation_action(
-        session_id=sid, elicitation_id=eid, verdict=Verdict(accepted=False)
+        session_id=sid,
+        elicitation_id=eid,
+        verdict=Verdict(accepted=False),
+        body=_interaction_body(card, accepted=False),
     )
     for _ in range(100):
         if slack.streams and all(s.stopped for s in slack.streams):
@@ -2635,7 +2667,10 @@ async def test_form_elicitation_forwards_selections_as_content(tmp_path: Path) -
     # Answers arrive as option indices ("Redis" is index 0); the service maps
     # them back to the full labels before forwarding to the server.
     await service.handle_elicitation_action(
-        session_id=sid, elicitation_id=eid, verdict=Verdict(accepted=True, content={"store": "0"})
+        session_id=sid,
+        elicitation_id=eid,
+        verdict=Verdict(accepted=True, content={"store": "0"}),
+        body=_interaction_body(card),
     )
     await _wait_for_resolved(omnigent)
     await service.shutdown()
@@ -2728,7 +2763,10 @@ async def test_url_mode_binary_renders_approval_card(tmp_path: Path) -> None:
     eid = _card_elicitation_id(card)
     sid = _card_session_id(card)
     await service.handle_elicitation_action(
-        session_id=sid, elicitation_id=eid, verdict=Verdict(accepted=True)
+        session_id=sid,
+        elicitation_id=eid,
+        verdict=Verdict(accepted=True),
+        body=_interaction_body(card),
     )
     await _wait_for_resolved(omnigent)
     await service.shutdown()
@@ -2760,7 +2798,10 @@ async def test_post_answer_message_only_committed_is_not_dropped(tmp_path: Path)
     eid = _card_elicitation_id(card)
     sid = _card_session_id(card)
     await service.handle_elicitation_action(
-        session_id=sid, elicitation_id=eid, verdict=Verdict(accepted=True, content={"store": "A"})
+        session_id=sid,
+        elicitation_id=eid,
+        verdict=Verdict(accepted=True, content={"store": "A"}),
+        body=_interaction_body(card),
     )
     await _wait_for_resolved(omnigent)
     await service.shutdown()
@@ -2824,7 +2865,10 @@ async def test_post_elicitation_answer_recovered_when_stream_silent(tmp_path: Pa
     eid = _card_elicitation_id(card)
     sid = _card_session_id(card)
     await service.handle_elicitation_action(
-        session_id=sid, elicitation_id=eid, verdict=Verdict(accepted=True, content={"store": "A"})
+        session_id=sid,
+        elicitation_id=eid,
+        verdict=Verdict(accepted=True, content={"store": "A"}),
+        body=_interaction_body(card),
     )
     await _wait_for_turn_end(slack)
     await service.shutdown()
@@ -2859,7 +2903,10 @@ async def test_elicitation_clears_working_placeholder(tmp_path: Path) -> None:
     eid = _card_elicitation_id(card)
     sid = _card_session_id(card)
     await service.handle_elicitation_action(
-        session_id=sid, elicitation_id=eid, verdict=Verdict(accepted=True)
+        session_id=sid,
+        elicitation_id=eid,
+        verdict=Verdict(accepted=True),
+        body=_interaction_body(card),
     )
     await _wait_for_resolved(omnigent)
     await service.shutdown()
@@ -3029,3 +3076,293 @@ async def test_interruption_preserves_chronological_order(tmp_path: Path) -> Non
     deny = next(p for p in slack.posts if "Blocked by policy" in str(p.get("text")))
     # Chronological: segment-1 opened, then the deny posted, then segment-2 opened.
     assert slack.streams[0].open_order < deny["order"] < slack.streams[1].open_order
+
+
+@pytest.mark.parametrize(
+    ("section", "field", "value"),
+    [
+        ("user", "id", "U2"),
+        ("team", "id", "T2"),
+        ("channel", "id", "C2"),
+        ("message", "thread_ts", "999.1"),
+        ("message", "ts", "wrong-card"),
+        ("container", "message_ts", "wrong-card"),
+        ("container", "channel_id", "C2"),
+        ("team", "id", None),
+        ("message", "thread_ts", None),
+        ("actions", "session", "wrong-session"),
+        ("actions", "elicitation", "wrong-request"),
+        ("actions", "action_id", "unknown_action"),
+    ],
+)
+async def test_handoff_callback_scope(
+    tmp_path: Path, section: str, field: str, value: str | None
+) -> None:
+    store = await _store(tmp_path)
+    slack, omnigent = FakeSlackClient(), ApprovalClient()
+    service, _pool, _setup = _service(store, omnigent)
+    await _configure_user(store, "T1", "U1")
+    try:
+        await service.handle_app_mention(
+            body={"team_id": "T1", "event_id": "scope"},
+            event={"channel": "C1", "ts": "100.1", "user": "U1", "text": "<@B1> edit"},
+            client=slack,
+            context={"bot_user_id": "B1"},
+        )
+        card = await _wait_for_card(slack)
+        body = _interaction_body(card)
+        tampered = deepcopy(body)
+        if section == "actions":
+            if field == "action_id":
+                tampered["actions"][0][field] = value
+            else:
+                target = _card_target(card)
+                tampered["actions"][0]["value"] = (
+                    f"U1 {value if field == 'session' else target.session_id} "
+                    f"{value if field == 'elicitation' else target.elicitation_id}"
+                )
+        else:
+            tampered[section][field] = value
+            if section == "user":
+                # Forge the encoded owner too, passing the obsolete owner-string gate.
+                tampered["actions"][0]["value"] = tampered["actions"][0]["value"].replace(
+                    "U1 ", "U2 "
+                )
+        await route_elicitation_click(service, slack, tampered, accepted=True)
+        await asyncio.sleep(0)
+        assert omnigent.resolved == []
+        assert not omnigent.resolve_signal.is_set()
+        await route_elicitation_click(service, slack, body, accepted=True)
+        await _wait_for_resolved(omnigent)
+        await route_elicitation_click(service, slack, body, accepted=True)
+        assert len(omnigent.resolved) == 1
+    finally:
+        await service.shutdown()
+
+
+@pytest.mark.parametrize("stale", ["expired", "mapping", "restart"])
+async def test_handoff_stale_callback(tmp_path: Path, stale: str) -> None:
+    store = await _store(tmp_path)
+    slack, omnigent = FakeSlackClient(), ApprovalClient()
+    service, _pool, _setup = _service(store, omnigent)
+    await _configure_user(store, "T1", "U1")
+    try:
+        await service.handle_app_mention(
+            body={"team_id": "T1", "event_id": "stale"},
+            event={"channel": "C1", "ts": "100.1", "user": "U1", "text": "<@B1> edit"},
+            client=slack,
+            context={"bot_user_id": "B1"},
+        )
+        card = await _wait_for_card(slack)
+        target = _card_target(card)
+        callback = deepcopy(_interaction_body(card))
+        if stale == "expired":
+            bindings = service._elicitation._bindings
+            key = (target.session_id, target.elicitation_id)
+            bindings[key] = replace(bindings[key], expires_at=0)
+        elif stale == "mapping":
+            await store.upsert_session(
+                ThreadKey("T1", "C1", "100.1"), "other", "title", owner_user_id="U1"
+            )
+        else:
+            await service.shutdown()
+            service, _pool, _setup = _service(store, omnigent)
+        before = list(omnigent.resolved)
+        await route_elicitation_click(service, slack, callback, accepted=True)
+        await asyncio.sleep(0)
+        assert omnigent.resolved == before
+    finally:
+        await service.shutdown()
+
+
+@pytest.mark.parametrize("phase", ["reserved", "session_known", "submitting", "unknown"])
+async def test_handoff_restart_never_resends_original(tmp_path: Path, phase: str) -> None:
+    key = ThreadKey("T1", "C1", "100.1")
+    store = await _store(tmp_path)
+    await _configure_user(store, "T1", "U1")
+    run_id = await store.reserve_turn(key, "U1")
+    assert run_id
+    if phase != "reserved":
+        await store.observe_turn(key, run_id, phase, session_id="original")
+        await store.upsert_session(key, "original", "title", owner_user_id="U1")
+    reopened = SQLiteStore(tmp_path / "store.sqlite3")
+    await reopened.initialize()
+    slack, omnigent = FakeSlackClient(), FakeOmnigentClient()
+    service, _pool, _setup = _service(reopened, omnigent)
+    try:
+        for event_id in ("restart", "restart", "next-delivery"):
+            await service.handle_app_mention(
+                body={"team_id": "T1", "event_id": event_id},
+                event={
+                    "channel": "C1",
+                    "ts": "101.1",
+                    "thread_ts": "100.1",
+                    "user": "U1",
+                    "text": "<@B1> retry",
+                },
+                client=slack,
+                context={"bot_user_id": "B1"},
+            )
+        await asyncio.gather(*tuple(service._turn_tasks), return_exceptions=True)
+        assert omnigent.created == []
+        assert omnigent.launched == []
+        assert omnigent.turns == []
+        assert slack.ephemerals
+        assert "original" in slack.ephemerals[-1]["text"]
+        assert "no acceptance" in slack.ephemerals[-1]["text"]
+        observation = await reopened.get_turn_observation(key)
+        assert observation and observation.run_id == run_id
+        assert observation.acceptance == "unknown"
+    finally:
+        await service.shutdown()
+
+
+@pytest.mark.parametrize("phase", ["before-session", "after-create", "after-send"])
+async def test_handoff_interrupted_boundaries(tmp_path: Path, phase: str) -> None:
+    class InterruptedClient(FakeOmnigentClient):
+        async def create_session(self, agent_id: str, title: str) -> str:
+            if phase == "before-session":
+                raise asyncio.CancelledError
+            return await super().create_session(agent_id, title)
+
+        async def launch_runner(
+            self, session_id: str, *, workspace: str, host_id: str | None = None
+        ) -> str:
+            if phase == "after-create":
+                raise asyncio.CancelledError
+            return await super().launch_runner(session_id, workspace=workspace, host_id=host_id)
+
+        async def run_turn(
+            self,
+            session_id: str,
+            text: str,
+            *,
+            workspace: str | None = None,
+            host_id: str | None = None,
+        ) -> AsyncIterator[dict[str, Any]]:
+            self.turns.append((session_id, text))
+            raise asyncio.CancelledError
+            yield
+
+    store = await _store(tmp_path)
+    await _configure_user(store, "T1", "U1")
+    slack, omnigent = FakeSlackClient(), InterruptedClient()
+    service, _pool, _setup = _service(store, omnigent)
+    event = {"channel": "C1", "ts": "100.1", "user": "U1", "text": "<@B1> edit"}
+    await service.handle_app_mention(
+        body={"team_id": "T1", "event_id": "interrupted"},
+        event=event,
+        client=slack,
+        context={"bot_user_id": "B1"},
+    )
+    await asyncio.gather(*tuple(service._turn_tasks), return_exceptions=True)
+    await service.shutdown()
+    observation = await store.get_turn_observation(ThreadKey("T1", "C1", "100.1"))
+    assert observation and observation.state == "unknown"
+    assert observation.session_id == (None if phase == "before-session" else "conv_1")
+    assert len(omnigent.turns) == (1 if phase == "after-send" else 0)
+    restarted = SQLiteStore(tmp_path / "store.sqlite3")
+    await restarted.initialize()
+    replacement = FakeOmnigentClient()
+    service, _pool, _setup = _service(restarted, replacement)
+    try:
+        for event_id in ("interrupted", "redelivery"):
+            await service.handle_app_mention(
+                body={"team_id": "T1", "event_id": event_id},
+                event=event,
+                client=slack,
+                context={"bot_user_id": "B1"},
+            )
+        await asyncio.gather(*tuple(service._turn_tasks), return_exceptions=True)
+        assert replacement.created == []
+        assert replacement.turns == []
+        assert "unknown or unresolved" in slack.ephemerals[-1]["text"]
+    finally:
+        await service.shutdown()
+
+
+async def test_handoff_failure_before_reservation_has_no_native_effect(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from unittest.mock import AsyncMock
+
+    store = await _store(tmp_path)
+    await _configure_user(store, "T1", "U1")
+    slack, omnigent = FakeSlackClient(), FakeOmnigentClient()
+    service, _pool, _setup = _service(store, omnigent)
+    reserve = store.reserve_turn
+    event = {"channel": "C1", "ts": "100.1", "user": "U1", "text": "<@B1> edit"}
+    try:
+        monkeypatch.setattr(
+            store, "reserve_turn", AsyncMock(side_effect=OSError("disk unavailable"))
+        )
+        with pytest.raises(OSError, match="disk unavailable"):
+            await service.handle_app_mention(
+                body={"team_id": "T1", "event_id": "failed"},
+                event=event,
+                client=slack,
+                context={"bot_user_id": "B1"},
+            )
+        assert omnigent.created == []
+        assert omnigent.turns == []
+        assert await store.get_turn_observation(ThreadKey("T1", "C1", "100.1")) is None
+        monkeypatch.setattr(store, "reserve_turn", reserve)
+        await service.handle_app_mention(
+            body={"team_id": "T1", "event_id": "new-owner-request"},
+            event=event,
+            client=slack,
+            context={"bot_user_id": "B1"},
+        )
+        await asyncio.gather(*tuple(service._turn_tasks), return_exceptions=True)
+        assert len(omnigent.created) == 1
+        assert omnigent.turns == [("conv_1", "edit")]
+    finally:
+        await service.shutdown()
+
+
+@pytest.mark.parametrize(
+    ("events", "expected_state"),
+    [
+        ([], "unknown"),
+        ([{"type": "session.status", "status": "idle", "response_id": "stale"}], "unknown"),
+        ([{"type": "response.completed"}], "source_terminal"),
+        (
+            [
+                {"type": "session.status", "status": "running", "response_id": "original"},
+                {"type": "session.status", "status": "idle", "response_id": "other"},
+            ],
+            "unknown",
+        ),
+        (
+            [
+                {"type": "session.status", "status": "running", "response_id": "original"},
+                {"type": "session.status", "status": "idle", "response_id": "original"},
+            ],
+            "source_terminal",
+        ),
+    ],
+)
+async def test_handoff_source_observation_is_not_acceptance(
+    tmp_path: Path, events: list[dict[str, Any]], expected_state: str
+) -> None:
+    store = await _store(tmp_path)
+    await _configure_user(store, "T1", "U1")
+    slack = FakeSlackClient()
+    service, _pool, _setup = _service(store, EventScriptClient(events))
+    try:
+        await service.handle_app_mention(
+            body={"team_id": "T1", "event_id": "source"},
+            event={"channel": "C1", "ts": "100.1", "user": "U1", "text": "<@B1> edit"},
+            client=slack,
+            context={"bot_user_id": "B1"},
+        )
+        await asyncio.gather(*tuple(service._turn_tasks), return_exceptions=True)
+        observation = await store.get_turn_observation(ThreadKey("T1", "C1", "100.1"))
+        assert observation and observation.state == expected_state
+        assert observation.acceptance == "unknown"
+        if expected_state == "unknown":
+            assert any("Delivery is unknown" in post.get("text", "") for post in slack.posts)
+        if any(event.get("status") == "running" for event in events):
+            assert observation.native_response_id == "original"
+    finally:
+        await service.shutdown()

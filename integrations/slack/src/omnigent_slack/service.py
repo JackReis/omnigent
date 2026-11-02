@@ -3,7 +3,7 @@ from __future__ import annotations
 import asyncio
 import contextlib
 import logging
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from typing import Any
 
 from omnigent_slack.approvals import (
@@ -81,7 +81,8 @@ _SERVER_UNREACHABLE_TEXT = (
 # in the thread when the turn finishes.
 _STREAM_INTERRUPTED_TEXT = (
     ":warning: I lost my live connection to the running turn. Its result may "
-    "still arrive here — send another message if it doesn't."
+    "still arrive here. Delivery is unknown; I won't resend it automatically. "
+    "Check the original native session with your operator."
 )
 
 
@@ -112,6 +113,8 @@ class _StreamState:
     # logged at the point of failure (never stored — it can carry stack traces /
     # internal paths), and the user only ever sees the generic failure message.
     errored: bool = False
+    source_terminal: bool = False
+    open_response_id: str | None = None
     # Set when a known error was delivered mid-stream and the turn should stop.
     aborted: bool = False
     # In-flight elicitation cards this turn (owned by the ElicitationController).
@@ -447,7 +450,7 @@ class SlackOmnigentService:
                         session_id=record.session_id,
                     )
                     return
-                self._spawn_turn(
+                spawned = await self._spawn_turn(
                     SlackTurn(
                         key=key,
                         text=text,
@@ -463,7 +466,6 @@ class SlackOmnigentService:
                         host_id=record.host_id,
                     )
                 )
-                spawned = True
                 return
 
             config = await self._store.get_user_config(key.team_id, requester)
@@ -482,7 +484,7 @@ class SlackOmnigentService:
                 )
                 return
 
-            self._spawn_turn(
+            spawned = await self._spawn_turn(
                 SlackTurn(
                     key=key,
                     text=text,
@@ -496,23 +498,56 @@ class SlackOmnigentService:
                     host_id=config.host_id,
                 )
             )
-            spawned = True
         finally:
             # Release the reservation unless a turn was spawned — the spawned
             # turn's ``_run_turn_tracked`` finally owns the release from here on.
             if not spawned:
                 self._active_threads.discard(key)
 
-    def _spawn_turn(self, turn: SlackTurn) -> None:
+    async def _spawn_turn(self, turn: SlackTurn) -> bool:
         """Run a reserved turn as a background task, tracked for shutdown.
 
         The thread is already reserved in ``_active_threads`` by ``_route_turn``
         (synchronously, before any await); ``_run_turn_tracked`` releases it when
         the turn ends.
         """
-        task = asyncio.create_task(self._run_turn_tracked(turn))
+        run_id = await self._store.reserve_turn(turn.key, turn.owner_user_id)
+        if run_id is None:
+            observation = await self._store.get_turn_observation(turn.key)
+            if observation and observation.owner_user_id != turn.owner_user_id:
+                await self._notifier.notify_non_owner(turn.slack_client, turn.key, turn.user_id)
+                return False
+            original = observation.session_id if observation else None
+            readback = " Original session readback unavailable."
+            if original:
+                try:
+                    omnigent = await self._pool.get(
+                        self._server_url, pack_user_key(turn.key.team_id, turn.owner_user_id)
+                    )
+                    activity = await omnigent.get_session_activity(original)
+                    if activity is not None:
+                        readback = (
+                            " Original session readback found pending input/approval."
+                            if activity.needs_user_action
+                            else " Original session readback does not prove delivery of this run."
+                        )
+                except Exception:
+                    pass
+            await self._notifier.post_ephemeral(
+                turn.slack_client,
+                turn.key,
+                turn.user_id,
+                "Delivery of the original turn is unknown or unresolved. I won't start another "
+                "turn in this thread. Reconcile the original native session with your operator"
+                + (f" (session {original})." if original else " (native session id unavailable).")
+                + readback
+                + " Pending Slack input/approval may have been lost; no acceptance is recorded.",
+            )
+            return False
+        task = asyncio.create_task(self._run_turn_tracked(replace(turn, run_id=run_id)))
         self._turn_tasks.add(task)
         task.add_done_callback(self._turn_tasks.discard)
+        return True
 
     async def _run_turn_tracked(self, turn: SlackTurn) -> None:
         try:
@@ -522,6 +557,13 @@ class SlackOmnigentService:
         except Exception:
             self._logger.exception("Slack turn failed for %s", turn.key.display())
         finally:
+            observation = await self._store.get_turn_observation(turn.key)
+            if (
+                observation
+                and observation.run_id == turn.run_id
+                and observation.state != "source_terminal"
+            ):
+                await self._store.observe_turn(turn.key, turn.run_id, "unknown")
             self._active_threads.discard(turn.key)
 
     async def _run_turn(self, turn: SlackTurn) -> None:
@@ -652,6 +694,9 @@ class SlackOmnigentService:
 
         try:
             session_id = await omnigent.create_session(turn.agent_id, turn.title)
+            await self._store.observe_turn(
+                turn.key, turn.run_id, "session_known", session_id=session_id
+            )
             runner_id = await omnigent.launch_runner(
                 session_id, workspace=turn.workspace or "", host_id=turn.host_id
             )
@@ -740,6 +785,7 @@ class SlackOmnigentService:
         """
         # Timestamp of the live plan/todo message, edited in place across updates.
         state = _StreamState()
+        await self._store.observe_turn(turn.key, turn.run_id, "submitting", session_id=session_id)
         try:
             # Explicit iteration (not ``async for``) so a gap between events can
             # be detected: when the stream goes quiet for ``_IDLE_FLUSH_SECONDS``
@@ -805,7 +851,32 @@ class SlackOmnigentService:
             # Settle any card still open (turn ended before its resolution push,
             # or was torn down) so no resolver task leaks; an unanswered one is
             # declined server-side to release the park.
+            lost_pending = any(
+                not pending.finalized and pending.verdict is None
+                for pending in state.elicitations.pending.values()
+            )
             await self._elicitation.finish_pending(omnigent, turn, state.elicitations)
+            await self._store.observe_turn(
+                turn.key,
+                turn.run_id,
+                "source_terminal"
+                if (
+                    state.source_terminal
+                    and not state.errored
+                    and not state.aborted
+                    and not lost_pending
+                )
+                else "unknown",
+            )
+
+        if not state.source_terminal or lost_pending:
+            await self._notifier.post_reply(
+                turn.slack_client,
+                turn.key,
+                "Delivery is unknown: the stream ended without a correlated terminal observation, "
+                "or pending input/approval was lost. Reconcile the original native session; "
+                "I won't resend this turn. Independent acceptance is unavailable.",
+            )
         if state.aborted:
             raise _TurnAborted("")  # already delivered; signal the caller to stop
         return state.errored
@@ -827,6 +898,33 @@ class SlackOmnigentService:
         and any in-band error text.
         """
         client = turn.slack_client
+
+        event_type = event.get("type")
+        response_id = event.get("response_id")
+        if event_type == "session.status":
+            status = event.get("status")
+            if status in ("running", "waiting") and isinstance(response_id, str) and response_id:
+                state.open_response_id = response_id
+                await self._store.observe_turn(
+                    turn.key,
+                    turn.run_id,
+                    "observing",
+                    native_response_id=response_id,
+                )
+            elif (
+                status in ("idle", "failed")
+                and state.open_response_id
+                and response_id == state.open_response_id
+            ):
+                state.source_terminal = True
+        elif event_type in (
+            "response.completed",
+            "response.failed",
+            "response.cancelled",
+            "turn.failed",
+            "turn.cancelled",
+        ):
+            state.source_terminal = True
 
         delta = extract_delta(event)
         if delta:
@@ -898,11 +996,27 @@ class SlackOmnigentService:
             state.errored = True
 
     async def handle_elicitation_action(
-        self, *, session_id: str, elicitation_id: str, verdict: Verdict
+        self,
+        *,
+        session_id: str,
+        elicitation_id: str,
+        verdict: Verdict,
+        body: dict[str, Any] | None = None,
     ) -> bool:
         """Deliver a button/form verdict (block-action handler entry point)."""
+        key = self._elicitation.binding_key(session_id, elicitation_id)
+        if key is None or body is None:
+            return False
+        record = await self._store.get_session(key)
+        user = body.get("user")
+        clicker = user.get("id") if isinstance(user, dict) else None
+        if record is None or record.session_id != session_id or record.owner_user_id != clicker:
+            return False
         return await self._elicitation.handle_action(
-            session_id=session_id, elicitation_id=elicitation_id, verdict=verdict
+            session_id=session_id,
+            elicitation_id=elicitation_id,
+            verdict=verdict,
+            body=body,
         )
 
     async def reject_non_owner_click(

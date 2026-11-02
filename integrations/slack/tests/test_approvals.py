@@ -31,7 +31,12 @@ class _RecordingSink:
         self._delivered = delivered
 
     async def handle_elicitation_action(
-        self, *, session_id: str, elicitation_id: str, verdict: Verdict
+        self,
+        *,
+        session_id: str,
+        elicitation_id: str,
+        verdict: Verdict,
+        body: dict[str, Any] | None = None,
     ) -> bool:
         self.calls.append((session_id, elicitation_id, verdict))
         return self._delivered

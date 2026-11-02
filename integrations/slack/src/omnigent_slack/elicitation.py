@@ -17,20 +17,27 @@ from __future__ import annotations
 import asyncio
 import contextlib
 import logging
+import time
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any
 
 from omnigent_slack.approvals import (
+    ACTION_APPROVE,
+    ACTION_DENY,
+    ACTION_FORM_CANCEL,
+    ACTION_FORM_SUBMIT,
     RESOLVED_EXTERNALLY,
     ClickTarget,
     ElicitationCoordinator,
     ElicitationOutcome,
     Verdict,
     elicitation_card_blocks,
+    parse_action_value,
     resolve_form_answers,
     resolved_card_blocks,
 )
+from omnigent_slack.links import native_link, native_link_unavailable
 from omnigent_slack.models import SlackTurn, ThreadKey
 from omnigent_slack.omnigent import ElicitationRequest, OmnigentClient
 
@@ -77,6 +84,15 @@ class ElicitationTurnState:
     pending: dict[str, PendingElicitation] = field(default_factory=dict)
 
 
+@dataclass(frozen=True)
+class InteractionBinding:
+    key: ThreadKey
+    owner_user_id: str
+    card_ts: str
+    is_form: bool
+    expires_at: float
+
+
 class ElicitationController:
     """Orchestrates elicitation cards for a turn, pure-push style.
 
@@ -103,16 +119,23 @@ class ElicitationController:
         # leave them pending ("Task was destroyed but it is pending"). Each task
         # removes itself on completion via a done callback.
         self._resolvers: set[asyncio.Task[None]] = set()
+        self._bindings: dict[tuple[str, str], InteractionBinding] = {}
 
     async def shutdown(self) -> None:
         """Cancel any still-running resolver tasks (called on bot shutdown)."""
+        self._bindings.clear()
         tasks = list(self._resolvers)
         for task in tasks:
             task.cancel()
         await asyncio.gather(*tasks, return_exceptions=True)
 
     async def handle_action(
-        self, *, session_id: str, elicitation_id: str, verdict: Verdict
+        self,
+        *,
+        session_id: str,
+        elicitation_id: str,
+        verdict: Verdict,
+        body: dict[str, Any] | None = None,
     ) -> bool:
         """Deliver a button/form verdict to the waiting resolver.
 
@@ -121,7 +144,43 @@ class ElicitationController:
         verdict can only wake the waiter for its own ``session_id``, so a click
         never resolves another session's elicitation even on an id collision.
         """
-        return self._coordinator.resolve(session_id, elicitation_id, verdict)
+        binding = self._bindings.get((session_id, elicitation_id))
+        if binding is None or body is None or time.monotonic() >= binding.expires_at:
+            return False
+        actions = body.get("actions")
+        if not isinstance(actions, list) or len(actions) != 1 or not isinstance(actions[0], dict):
+            return False
+        action = actions[0]
+        value = action.get("value")
+        target = parse_action_value(value) if isinstance(value, str) else None
+        if target != ClickTarget(binding.owner_user_id, session_id, elicitation_id):
+            return False
+        action_id = (
+            (ACTION_FORM_SUBMIT if verdict.accepted else ACTION_FORM_CANCEL)
+            if binding.is_form
+            else (ACTION_APPROVE if verdict.accepted else ACTION_DENY)
+        )
+        if action.get("action_id") != action_id:
+            return False
+        expected = {
+            "user": {"id": binding.owner_user_id},
+            "team": {"id": binding.key.team_id},
+            "channel": {"id": binding.key.channel_id},
+            "message": {"ts": binding.card_ts, "thread_ts": binding.key.thread_ts},
+            "container": {"message_ts": binding.card_ts, "channel_id": binding.key.channel_id},
+        }
+        for section, fields in expected.items():
+            actual = body.get(section)
+            if not isinstance(actual, dict) or any(actual.get(k) != v for k, v in fields.items()):
+                return False
+        delivered = self._coordinator.resolve(session_id, elicitation_id, verdict)
+        if delivered:
+            self._bindings.pop((session_id, elicitation_id), None)
+        return delivered
+
+    def binding_key(self, session_id: str, elicitation_id: str) -> ThreadKey | None:
+        binding = self._bindings.get((session_id, elicitation_id))
+        return binding.key if binding else None
 
     async def reject_non_owner_click(
         self, client: SlackClientProtocol, body: dict[str, Any], target: ClickTarget
@@ -185,13 +244,15 @@ class ElicitationController:
             )
             return
         if not request.is_supported:
+            link = self._approve_link(request.session_id, request.elicitation_id)
+            destination = link or await native_link_unavailable(client, key)
             await self._post_reply(
                 client,
                 key,
                 (
                     ":link: Omnigent needs input I can't collect here "
                     f"({request.message}). Open the session to respond:\n"
-                    f"{self._approve_link(request.session_id, request.elicitation_id)}"
+                    f"{destination}"
                 ),
             )
             self._logger.info(
@@ -230,6 +291,13 @@ class ElicitationController:
             await self._abandon_unpostable(omnigent, request, key, reason="no message ts")
             return
         pending = PendingElicitation(request=request, card_ts=card_ts)
+        self._bindings[(request.session_id, request.elicitation_id)] = InteractionBinding(
+            key,
+            turn.owner_user_id,
+            card_ts,
+            request.is_form,
+            time.monotonic() + self._coordinator.timeout_seconds,
+        )
         state.pending[request.elicitation_id] = pending
         resolver = asyncio.create_task(self._resolve_verdict(omnigent, request, pending))
         pending.resolver = resolver
@@ -286,7 +354,12 @@ class ElicitationController:
         and flagged (``delivery_failed``) WITHOUT recording the verdict, so the
         card never shows "Approved/Denied" for an answer the server never got.
         """
-        verdict = await self._coordinator.await_verdict(request.session_id, request.elicitation_id)
+        try:
+            verdict = await self._coordinator.await_verdict(
+                request.session_id, request.elicitation_id
+            )
+        finally:
+            self._bindings.pop((request.session_id, request.elicitation_id), None)
         if verdict is RESOLVED_EXTERNALLY:
             # Already resolved server-side; post nothing (the loop finalizes).
             return
@@ -306,6 +379,7 @@ class ElicitationController:
         # actually received. If the POST raises, the server never got the verdict
         # (still parked), so leave ``verdict`` unset and flag the failure — the
         # card then shows a delivery-failure notice, not a false "Approved".
+        pending.delivery_failed = True
         try:
             await omnigent.resolve_elicitation(
                 request.session_id,
@@ -323,6 +397,7 @@ class ElicitationController:
                 verdict.accepted,
             )
             return
+        pending.delivery_failed = False
         pending.verdict = verdict
 
     async def on_resolved(
@@ -381,22 +456,16 @@ class ElicitationController:
                 resolver.cancel()
                 with contextlib.suppress(asyncio.CancelledError, Exception):
                     await resolver
-            # The server-side park is released only when a POST actually reached
-            # the server: a delivered verdict, or a timeout whose decline POST
-            # landed. ``delivery_failed`` means the LAST POST (verdict OR the
-            # timeout decline) never landed — so even a timed-out request whose
-            # decline failed is still parked. Excluding delivery_failed here routes
-            # that compound case into _decline_abandoned (best-effort re-decline)
-            # so the session isn't wedged, while keeping the DELIVERY_FAILED label.
+            # A failed/cancelled POST may have reached the server; never resend it.
             server_park_released = not pending.delivery_failed and (
                 pending.verdict is not None or pending.timed_out
             )
             if server_park_released:
                 outcome = self._outcome(pending)
             else:
-                # Nothing reached the server (unanswered, or delivery failed) and
-                # the park is still open — decline to release it (best-effort).
-                await self._decline_abandoned(omnigent, pending)
+                # Only a genuinely unanswered request can safely be declined.
+                if not pending.delivery_failed:
+                    await self._decline_abandoned(omnigent, pending)
                 # Keep an explicit delivery-failure label; otherwise "abandoned".
                 outcome = (
                     self._outcome(pending)
@@ -422,6 +491,7 @@ class ElicitationController:
         down.
         """
         request = pending.request
+        pending.delivery_failed = True
         try:
             await omnigent.resolve_elicitation(
                 request.session_id,
@@ -429,6 +499,7 @@ class ElicitationController:
                 accepted=False,
                 content=None,
             )
+            pending.delivery_failed = False
         except Exception:
             self._logger.warning(
                 "Failed to decline abandoned elicitation session_id=%s elicitation_id=%s",
@@ -439,9 +510,7 @@ class ElicitationController:
     @staticmethod
     def _outcome(pending: PendingElicitation) -> ElicitationOutcome:
         if pending.delivery_failed:
-            # A Slack verdict was clicked but its POST to the server failed — the
-            # server never got it and is still parked. Say so, don't imply it went
-            # through.
+            # Transport loss does not establish whether the verdict was received.
             return ElicitationOutcome.DELIVERY_FAILED
         if pending.timed_out:
             return ElicitationOutcome.TIMED_OUT
@@ -475,8 +544,7 @@ class ElicitationController:
                 "Elicitation card update failed thread=%s; continuing", turn.key.display()
             )
 
-    def _approve_link(self, session_id: str, elicitation_id: str) -> str:
+    def _approve_link(self, session_id: str, elicitation_id: str) -> str | None:
         # Deep link to the elicitation's approve page in the Omnigent web UI, so
         # a user can resolve a request the bot can't render in Slack.
-        base = self._server_url.rstrip("/")
-        return f"{base}/approve/{session_id}/{elicitation_id}"
+        return native_link(self._server_url, session_id, elicitation_id)

@@ -271,10 +271,8 @@ async def test_auth_wall_mid_turn_prompts_relogin(tmp_path: Path) -> None:
 
 
 @respx.mock
-async def test_runner_unavailable_triggers_launch_and_retry(tmp_path: Path) -> None:
-    """A pre-existing session whose bound runner is gone: the first submit returns
-    503 runner_unavailable, so the client launches a fresh runner and retries the
-    turn — the answer still streams."""
+async def test_runner_unavailable_after_submit_requires_reconciliation(tmp_path: Path) -> None:
+    """A submission error is not authorization to retry an ambiguous original turn."""
     server = FakeOmnigentServer(_SERVER)
     server.first_submit_runner_unavailable = True
     server.install(respx.mock)
@@ -298,16 +296,19 @@ async def test_runner_unavailable_triggers_launch_and_retry(tmp_path: Path) -> N
             client=client,
             context={"bot_user_id": "B1"},
         )
-        await _wait_for_stream_stop(client, service)
+        await _wait_for_turns(service)
     finally:
         await service.shutdown()
         await pool.aclose_all()
 
-    # Server side: the 503 on the first submit drove a runner launch, then a retry.
-    assert server.paths("POST").count(f"/v1/sessions/{server.session_id}/events") == 2
-    assert "/v1/hosts/h1/runners" in server.paths("POST")
-    # Slack side: the answer streamed despite the mid-turn runner miss.
-    assert "Here is the answer." in client.streamed_text
+    assert server.paths("POST").count(f"/v1/sessions/{server.session_id}/events") == 1
+    assert "/v1/hosts/h1/runners" not in server.paths("POST")
+    assert client.streams == []
+    assert "Here is the answer." not in client.streamed_text
+    assert any("Delivery is unknown" in post.get("text", "") for post in client.posts)
+    observation = await store.get_turn_observation(key)
+    assert observation and observation.state == "unknown"
+    assert observation.acceptance == "unknown"
 
 
 # ── Scenario 6: host unavailable on launch → host guidance, no orphan ──────────
