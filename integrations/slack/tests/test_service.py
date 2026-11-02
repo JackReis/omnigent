@@ -294,6 +294,7 @@ class FakeOmnigentClient:
         host_id: str | None = None,
     ) -> AsyncIterator[dict[str, Any]]:
         self.turns.append((session_id, text))
+        yield {"type": "session.status", "status": "running", "response_id": "original"}
         yield {"type": "response.output_text.delta", "delta": "hel"}
         yield {"type": "response.output_text.delta", "delta": "lo"}
         yield {
@@ -305,6 +306,7 @@ class FakeOmnigentClient:
             },
         }
         yield {"type": "response.completed", "response": {"status": "completed"}}
+        yield {"type": "session.status", "status": "idle", "response_id": "original"}
 
     async def latest_assistant_message(self, session_id: str) -> tuple[str, str] | None:
         # (item_id, text) of the newest assistant message, or None. Tests that
@@ -3325,7 +3327,15 @@ async def test_handoff_failure_before_reservation_has_no_native_effect(
     [
         ([], "unknown"),
         ([{"type": "session.status", "status": "idle", "response_id": "stale"}], "unknown"),
-        ([{"type": "response.completed"}], "source_terminal"),
+        ([{"type": "response.completed"}], "unknown"),
+        (
+            [
+                {"type": "session.status", "status": "running", "response_id": "original"},
+                {"type": "response.completed", "response_id": "original"},
+                {"type": "session.status", "status": "idle", "response_id": "original"},
+            ],
+            "source_terminal",
+        ),
         (
             [
                 {"type": "session.status", "status": "running", "response_id": "original"},
@@ -3364,5 +3374,72 @@ async def test_handoff_source_observation_is_not_acceptance(
             assert any("Delivery is unknown" in post.get("text", "") for post in slack.posts)
         if any(event.get("status") == "running" for event in events):
             assert observation.native_response_id == "original"
+    finally:
+        await service.shutdown()
+
+
+@pytest.mark.parametrize(
+    "tail",
+    [
+        [{"type": "response.completed", "response_id": "other"}],
+        [{"type": "response.completed", "response_id": "original"}],
+        [{"type": "response.failed", "response_id": "other"}],
+        [{"type": "response.cancelled", "response_id": "other"}],
+        [{"type": "turn.failed", "response_id": "other"}],
+        [{"type": "turn.cancelled", "response_id": "other"}],
+        [
+            {"type": "response.completed", "response_id": "original"},
+            {"type": "session.status", "status": "running", "response_id": "next"},
+        ],
+        [
+            {"type": "session.status", "status": "idle", "response_id": "original"},
+            {"type": "session.status", "status": "running", "response_id": "next"},
+        ],
+        [
+            {"type": "session.status", "status": "idle", "response_id": "original"},
+            {"type": "session.status", "status": "waiting"},
+        ],
+        [{"type": "session.status", "status": "idle", "response_id": "other"}],
+        [],
+    ],
+)
+async def test_handoff_partial_response_blocks_followup(
+    tmp_path: Path, tail: list[dict[str, Any]]
+) -> None:
+    store = await _store(tmp_path)
+    await _configure_user(store, "T1", "U1")
+    key = ThreadKey("T1", "C1", "100.1")
+    native = EventScriptClient(
+        [{"type": "session.status", "status": "running", "response_id": "original"}, *tail]
+    )
+    slack = FakeSlackClient()
+    service, _pool, _setup = _service(store, native)
+    try:
+        await service.handle_app_mention(
+            body={"team_id": "T1", "event_id": "partial"},
+            event={"channel": "C1", "ts": "100.1", "user": "U1", "text": "<@B1> edit"},
+            client=slack,
+            context={"bot_user_id": "B1"},
+        )
+        await asyncio.gather(*tuple(service._turn_tasks), return_exceptions=True)
+        original = await store.get_turn_observation(key)
+        await service.handle_app_mention(
+            body={"team_id": "T1", "event_id": "followup"},
+            event={
+                "channel": "C1",
+                "thread_ts": "100.1",
+                "ts": "100.2",
+                "user": "U1",
+                "text": "<@B1> retry edit",
+            },
+            client=slack,
+            context={"bot_user_id": "B1"},
+        )
+        await asyncio.gather(*tuple(service._turn_tasks), return_exceptions=True)
+        assert original and original.state == "unknown"
+        assert original.acceptance == "unknown"
+        assert await store.get_turn_observation(key) == original
+        assert native.turns == [("conv_1", "edit")]
+        assert any("Delivery is unknown" in post.get("text", "") for post in slack.posts)
     finally:
         await service.shutdown()

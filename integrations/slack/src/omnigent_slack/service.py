@@ -901,15 +901,20 @@ class SlackOmnigentService:
 
         event_type = event.get("type")
         response_id = event.get("response_id")
+        # A response can end before the whole turn (e.g. tool follow-ups). Only
+        # the correlated session status can release the durable reservation.
         if event_type == "session.status":
             status = event.get("status")
-            if status in ("running", "waiting") and isinstance(response_id, str) and response_id:
-                state.open_response_id = response_id
+            if status in ("running", "waiting"):
+                state.source_terminal = False
+                state.open_response_id = (
+                    response_id if isinstance(response_id, str) and response_id else None
+                )
                 await self._store.observe_turn(
                     turn.key,
                     turn.run_id,
                     "observing",
-                    native_response_id=response_id,
+                    native_response_id=state.open_response_id,
                 )
             elif (
                 status in ("idle", "failed")
@@ -917,14 +922,6 @@ class SlackOmnigentService:
                 and response_id == state.open_response_id
             ):
                 state.source_terminal = True
-        elif event_type in (
-            "response.completed",
-            "response.failed",
-            "response.cancelled",
-            "turn.failed",
-            "turn.cancelled",
-        ):
-            state.source_terminal = True
 
         delta = extract_delta(event)
         if delta:

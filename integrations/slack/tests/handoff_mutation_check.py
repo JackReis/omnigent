@@ -16,6 +16,7 @@ SCOPE_TEST = SERVICE_TEST + "test_handoff_callback_scope"
 STALE_TEST = SERVICE_TEST + "test_handoff_stale_callback"
 RESTART_TEST = SERVICE_TEST + "test_handoff_restart_never_resends_original"
 TERMINAL_TEST = SERVICE_TEST + "test_handoff_source_observation_is_not_acceptance"
+PARTIAL_TEST = SERVICE_TEST + "test_handoff_partial_response_blocks_followup"
 RETRY_TEST = (
     "integrations/slack/tests/test_omnigent.py::test_handoff_runner_loss_after_submit_cannot_retry"
 )
@@ -88,6 +89,26 @@ MUTATIONS: dict[str, tuple[list[tuple[str, str, str]], str]] = {
             ),
         ],
         TERMINAL_TEST,
+    ),
+    "response-is-whole-turn": (
+        [
+            (
+                "service.py",
+                '        if event_type == "session.status":\n',
+                '        if event_type == "response.completed":\n'
+                "            state.source_terminal = True\n"
+                '        if event_type == "session.status":\n',
+            ),
+        ],
+        PARTIAL_TEST,
+    ),
+    "stale-terminal-after-running": (
+        [("service.py", "                state.source_terminal = False\n", "")],
+        PARTIAL_TEST,
+    ),
+    "idle-response-correlation": (
+        [("service.py", "            and response_id == state.open_response_id\n", "")],
+        PARTIAL_TEST,
     ),
 }
 
