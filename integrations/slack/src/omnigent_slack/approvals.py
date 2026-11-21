@@ -105,6 +105,10 @@ class ElicitationCoordinator:
         self._pending: dict[tuple[str, str], asyncio.Future[Verdict | object]] = {}
         self._timeout = timeout_seconds
 
+    @property
+    def timeout_seconds(self) -> float:
+        return self._timeout
+
     def register(self, session_id: str, elicitation_id: str) -> None:
         """Register a waiter for ``(session_id, elicitation_id)`` synchronously.
 
@@ -315,9 +319,10 @@ def resolved_card_blocks(
         # request was dropped and that re-sending starts a fresh attempt.
         text += "\n_No response in time — I declined it. Send your message again to retry._"
     elif outcome is ElicitationOutcome.DELIVERY_FAILED:
-        # The click never reached the server, so it's still parked on this request
-        # — the turn can't continue. Re-sending starts a fresh attempt.
-        text += "\n_I couldn't deliver your answer to Omnigent. Send your message again to retry._"
+        text += (
+            "\n_Delivery is unknown. Check the original native session with your operator; "
+            "I won't retry this answer or start a new turn automatically._"
+        )
     elif outcome is ElicitationOutcome.ABANDONED:
         # The turn ended before this was answered; declined server-side to free
         # the session. Re-sending starts a fresh attempt.
@@ -425,7 +430,12 @@ def _as_index(value: Any) -> int | None:
 
 class _ElicitationSink(Protocol):
     async def handle_elicitation_action(
-        self, *, session_id: str, elicitation_id: str, verdict: Verdict
+        self,
+        *,
+        session_id: str,
+        elicitation_id: str,
+        verdict: Verdict,
+        body: dict[str, Any] | None = None,
     ) -> bool: ...
 
     async def reject_non_owner_click(
@@ -480,6 +490,7 @@ async def route_elicitation_click(
         session_id=target.session_id,
         elicitation_id=target.elicitation_id,
         verdict=Verdict(accepted=accepted, content=content),
+        body=body,
     )
     if not delivered:
         _logger.info("Approval click had no waiter elicitation_id=%s", target.elicitation_id)

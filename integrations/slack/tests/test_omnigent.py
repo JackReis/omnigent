@@ -1325,3 +1325,59 @@ async def test_run_turn_survives_many_drops_that_each_make_progress(
     # Every leg's new delta was forwarded and the turn completed — not abandoned
     # despite far more drops than the consecutive-reconnect cap.
     assert "".join(d for d in deltas if d) == "".join(f"part{i} " for i in range(n_legs))
+
+
+@respx.mock
+async def test_handoff_runner_loss_after_submit_cannot_retry(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from unittest.mock import AsyncMock
+
+    class DroppingStream(httpx.AsyncByteStream):
+        async def __aiter__(self) -> AsyncIterator[bytes]:
+            yield b'data: {"type":"session.status","status":"running","response_id":"r1"}\n\n'
+            yield b'data: {"type":"response.output_text.delta","delta":"working"}\n\n'
+            raise httpx.RemoteProtocolError("connection lost")
+
+    respx.get("http://omnigent.test/v1/sessions/conv_1/stream").mock(
+        side_effect=[
+            httpx.Response(200, stream=DroppingStream()),
+            httpx.Response(503, json={"error": {"code": "runner_unavailable"}}),
+            httpx.Response(200, text='data: {"type":"response.completed"}\n\n'),
+        ]
+    )
+    respx.get("http://omnigent.test/v1/sessions/conv_1").mock(
+        return_value=httpx.Response(200, json={"status": "running"})
+    )
+    submit = respx.post("http://omnigent.test/v1/sessions/conv_1/events").mock(
+        return_value=httpx.Response(200, json={})
+    )
+    client = OmnigentClient("http://omnigent.test")
+    launch = AsyncMock(return_value="runner_2")
+    monkeypatch.setattr(client, "launch_runner", launch)
+    try:
+        with pytest.raises(StreamInterruptedError, match="Original session delivery unknown"):
+            async for _event in client.run_turn("conv_1", "edit", workspace="/tmp/work"):
+                pass
+        assert submit.call_count == 1
+        launch.assert_not_called()
+    finally:
+        await client.aclose()
+
+
+@respx.mock
+async def test_handoff_lost_submit_response_is_not_retried() -> None:
+    respx.get("http://omnigent.test/v1/sessions/conv_1/stream").mock(
+        return_value=httpx.Response(200, text='data: {"type":"session.heartbeat"}\n\n')
+    )
+    submit = respx.post("http://omnigent.test/v1/sessions/conv_1/events").mock(
+        side_effect=httpx.RemoteProtocolError("response lost after delivery")
+    )
+    client = OmnigentClient("http://omnigent.test")
+    try:
+        with pytest.raises(ServerUnreachableError):
+            async for _event in client.run_turn("conv_1", "edit", workspace="/tmp/work"):
+                pass
+        assert submit.call_count == 1
+    finally:
+        await client.aclose()

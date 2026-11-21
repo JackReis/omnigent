@@ -3,6 +3,7 @@ from __future__ import annotations
 import logging
 from typing import TYPE_CHECKING, Any
 
+from omnigent_slack.links import native_link, native_link_unavailable
 from omnigent_slack.models import ThreadKey
 from omnigent_slack.omnigent import OutputFile
 from omnigent_slack.text import GENERIC_FAILURE_TEXT, truncate_for_slack
@@ -115,9 +116,11 @@ class SlackNotifier:
         lines = [f":robot_face: *{agent}*{harness_note}"]
         if workspace:
             lines.append(f":file_folder: `{workspace}`")
-        lines.append(
-            f":globe_with_meridians: <{self._session_web_link(session_id)}|Open in Omnigent>"
-        )
+        link = self._session_web_link(session_id)
+        if link:
+            lines.append(f":globe_with_meridians: <{link}|Open in Omnigent>")
+        else:
+            lines.append(await native_link_unavailable(client, key))
         try:
             await client.chat_postMessage(
                 channel=key.channel_id,
@@ -212,11 +215,12 @@ class SlackNotifier:
                 "I handle one at a time here, so send this again once I've replied"
             )
             text += f", or wait / interrupt in the <{link}|web UI>." if link else "."
+        if session_id and link is None:
+            text += " " + await native_link_unavailable(client, key)
         await self.post_ephemeral(client, key, user_id, text)
 
-    def _session_web_link(self, session_id: str) -> str:
+    def _session_web_link(self, session_id: str) -> str | None:
         # Link to the session's conversation page in the Omnigent web UI, where a
         # user can continue a thread that's mid-turn in Slack (the web UI accepts
         # concurrent input and shows any pending actions).
-        base = self._server_url.rstrip("/")
-        return f"{base}/c/{session_id}"
+        return native_link(self._server_url, session_id)

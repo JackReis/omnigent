@@ -90,3 +90,4 @@ class SlackTurn:
     owner_user_id: str
     workspace: str | None = None
     host_id: str | None = None
+    run_id: str | None = None

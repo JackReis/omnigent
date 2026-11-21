@@ -712,8 +712,8 @@ class OmnigentClient:
                     if not submitted:
                         # Submit ONCE: the server keeps running the turn across a
                         # reconnect, so re-submitting would start a second turn.
-                        await self.submit_message(session_id, text)
                         submitted = True
+                        await self.submit_message(session_id, text)
                     iterator = events.__aiter__()
                     # A single in-flight "next event" task. A liveness timeout must
                     # NOT cancel it (that would terminate the async generator); we
@@ -867,6 +867,12 @@ class OmnigentClient:
                 # The stream ended without a terminal event or a drop (the server
                 # closed it cleanly) — the turn is over from this client's view.
                 return
+            except RunnerUnavailableError as exc:
+                if submitted:
+                    raise StreamInterruptedError(
+                        "Original session delivery unknown; refusing runner retry"
+                    ) from exc
+                raise
             except StreamInterruptedError as exc:
                 total_reconnects += 1
                 # A leg that forwarded a NEW event before dropping is progress, not
