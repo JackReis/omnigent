@@ -13,6 +13,7 @@ import json
 import secrets
 import time
 from collections.abc import Callable, Mapping, Sequence
+from datetime import datetime, timezone
 from typing import Any, Literal, cast
 
 import httpx
@@ -90,7 +91,7 @@ from omnigent.runtime.policies.builder import (
 )
 from omnigent.runtime.policies.engine import PolicyEngine
 from omnigent.runtime.workflow import _find_spec_by_name
-from omnigent.server import session_live_state
+from omnigent.server import paperclip_cost_events, session_live_state
 from omnigent.server._elicitation_registry import (
     _harness_elicitation_owners,
     _harness_elicitation_registry,
@@ -1188,6 +1189,10 @@ def _accumulate_session_usage(
     total_tokens = usage_obj.get("total_tokens", 0)
     if not any((input_tokens, output_tokens, total_tokens)):
         return None
+    # The turn's wall-clock moment: this is the only point where a single
+    # turn's delta, model, and cost are all in scope, so the Paperclip
+    # ``occurredAt`` is captured here rather than reconstructed later.
+    occurred_at = datetime.now(timezone.utc)
 
     cache_read_input_tokens = usage_obj.get("cache_read_input_tokens", 0)
     cache_creation_input_tokens = usage_obj.get("cache_creation_input_tokens", 0)
@@ -1268,6 +1273,17 @@ def _accumulate_session_usage(
     new_current = conversation_store.increment_session_usage(session_id, delta)
     # Per-user daily rollup (policy-gated; this is the per-turn delta).
     _record_daily_cost(conv, cost_delta, conversation_store)
+    # Opt-in external cost tracking. Fire-and-forget and never raises, so
+    # a dead Paperclip endpoint can't affect the relay loop or the ledger.
+    if priced and llm_model:
+        paperclip_cost_events.report_cost_event(
+            model=llm_model,
+            cost_usd=cost_delta,
+            occurred_at=occurred_at,
+            input_tokens=input_tokens,
+            output_tokens=output_tokens,
+            cached_input_tokens=cache_read_input_tokens,
+        )
     return _priced_cost_for_display(new_current)
 
 
@@ -1338,6 +1354,9 @@ def _persist_native_cumulative_usage(
     ccache = _coerce_cumulative_field(data, "cumulative_cache_read_input_tokens", numeric=False)
     if cost is None and policy_cost is None and cin is None and cout is None:
         return None
+    # The turn's wall-clock moment, captured at the write site for the
+    # Paperclip ``occurredAt`` (same rationale as _accumulate_session_usage).
+    occurred_at = datetime.now(timezone.utc)
 
     conv = conversation_store.get_conversation(session_id)
     current: dict[str, Any] = dict(conv.session_usage) if conv and conv.session_usage else {}
@@ -1459,6 +1478,26 @@ def _persist_native_cumulative_usage(
     # Non-negative by the monotonic clamp above; ``max(0.0, ...)`` keeps the
     # daily rollup from ever being clawed back even if that invariant changes.
     _record_daily_cost(conv, max(0.0, new_cost - old_cost), conversation_store)
+    # Opt-in external cost tracking. Native harnesses report cumulative
+    # totals, so the per-turn event carries this report's growth (new - old,
+    # same delta the by_model buckets accumulate). Only priced growth emits —
+    # a replayed/frozen total is a no-op turn. Fire-and-forget, never raises.
+    turn_cost = new_cost - old_cost
+    if turn_cost > 0 and isinstance(model_name, str) and model_name:
+        paperclip_cost_events.report_cost_event(
+            model=model_name,
+            cost_usd=turn_cost,
+            occurred_at=occurred_at,
+            input_tokens=max(0, int(current.get("input_tokens", 0)) - old_tokens["input_tokens"]),
+            output_tokens=max(
+                0, int(current.get("output_tokens", 0)) - old_tokens["output_tokens"]
+            ),
+            cached_input_tokens=max(
+                0,
+                int(current.get("cache_read_input_tokens", 0))
+                - old_tokens["cache_read_input_tokens"],
+            ),
+        )
     return _priced_cost_for_display(current)
 
 
